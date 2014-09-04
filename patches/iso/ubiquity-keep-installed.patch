@@ -1,0 +1,8 @@
+--- a/preseed/kubuntu.seed	2013-10-16 22:13:07.000000000 +0200
++++ b/preseed/kubuntu.seed	2014-03-13 20:02:16.991868107 +0100
+@@ -10,4 +10,4 @@
+ # application packages pulled in by language packs. Given that we clearly
+ # have the space to include them on the DVD, they're useful and we might as
+ # well keep them installed.
+-ubiquity	ubiquity/keep-installed	string icedtea6-plugin openoffice.org
++ubiquity	ubiquity/keep-installed	string icedtea6-plugin openoffice.org gparted kpartx kpartx-boot libgtkmm apt-clone cryptsetup dpkg-repack gir1.2-json-1.0 gir1.2-xkl-1.0 gir1.2-timezonemap-1.0 keyutils libnss3-1d python-pyicu realpath

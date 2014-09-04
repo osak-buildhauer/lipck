@@ -1,0 +1,90 @@
+--- a/scripts/casper	2014-03-13 20:35:34.293226677 +0100
++++ b/scripts/casper	2014-03-13 20:28:39.978460056 +0100
+@@ -43,6 +43,8 @@
+                 export PERSISTENT_PATH="${x#persistent-path=}" ;;
+             union=*)
+                 export UNIONFS="${x#union=}";;
++            unionstack=*)
++                export UNIONSTACK="${x#unionstack=}";;
+             ip=*)
+                 STATICIP=${x#ip=}
+                 if [ "${STATICIP}" = "" ]; then
+@@ -426,6 +428,13 @@
+                 continue
+             fi
+ 
++            if [ -n "$UNIONSTACK" ]; then
++                if [ "$(echo $UNIONSTACK | sed "s/$imagename//";)" == "$UNIONSTACK" ]; then
++                    log_warning_msg "Filesystem image $imagename not in UNIONSTACK. Ignored."
++                    continue
++                fi
++            fi
++
+             if [ -d "${image}" ]; then
+                 # it is a plain directory: do nothing
+                 rofsstring="${image}=${roopt}:${rofsstring}"
+@@ -461,6 +470,10 @@
+     fi
+ 
+     mount -t ${cow_fstype} -o ${cow_mountopt} ${cowdevice} /cow || panic "Can not mount $cowdevice on /cow"
++    
++    overlay_mount_dir=/overlay
++    mkdir -p "$overlay_mount_dir"
++    
+ 
+     case ${UNIONFS} in
+         unionfs-fuse)
+@@ -475,7 +488,9 @@
+             # Mount the layers pairwise from the bottom onto rootmnt,
+             # for the second and later layers rootmnt forms the lower layer.
+             mounts=""
+-            for mount in /cow $rofslist
++
++	    #overlay all readonly file systems first
++            for mount in $rofslist
+             do
+                 mounts="$mount $mounts"
+             done
+@@ -487,9 +502,13 @@
+                     continue
+                 fi
+                 mount -t overlayfs -o "upperdir=$mount,lowerdir=$lower" \
+-                    "$mount" "$rootmnt"
+-                lower="$rootmnt"
++                    "$mount" "$overlay_mount_dir"
++                lower="$overlay_mount_dir"
+             done
++            
++            mount -t overlayfs -o "upperdir=/cow,lowerdir=$lower" \
++                    "$mount" "$rootmnt"
++
+             ;;
+     esac
+ 
+@@ -530,15 +549,17 @@
+     fi
+ 
+     # move the first mount; no head in busybox-initramfs
+-    for d in $(mount -t squashfs | cut -d\  -f 3); do
+-        mkdir -p "${rootmnt}/rofs"
+-        if [ "${UNIONFS}" = unionfs-fuse ]; then
+-            mount -o bind "${d}" "${rootmnt}/rofs"
+-        else
+-            mount -o move "${d}" "${rootmnt}/rofs"
+-        fi
+-        break
+-    done
++    #for d in $(mount -t squashfs | cut -d\  -f 3); do
++    #    mkdir -p "${rootmnt}/rofs"
++    #    if [ "${UNIONFS}" = unionfs-fuse ]; then
++    #        mount -o bind "${d}" "${rootmnt}/rofs"
++    #    else
++    #        mount -o move "${d}" "${rootmnt}/rofs"
++    #    fi
++    #    break
++    #done
++    mkdir -p "${rootmnt}/rofs"
++    mount -o move "$lower" "${rootmnt}/rofs"
+ }
+ 
+ check_dev ()

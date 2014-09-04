@@ -1,0 +1,12 @@
+--- a/lib/partman/finish.d/01apt_clone_save	2013-01-12 03:31:22.000000000 +0000
++++ b/lib/partman/finish.d/01apt_clone_save	2013-04-06 16:23:16.103678237 +0000
+@@ -39,6 +39,9 @@
+ 	close_dialog
+ done
+ 
++#lip patch to prevent the apt-clone save call
++root=""
++
+ if [ -z "$root" ]; then
+ 	# The partition is going to be formatted; there's nothing to preserve.
+ 	exit 0
