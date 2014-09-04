@@ -1,0 +1,11 @@
+
+[Desktop Entry]
+Type=Application
+Exec=/bin/bash /usr/bin/libnsa.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[de_DE]=LIP Statistik
+Name=LIP statistic
+Comment[de_DE]=Speichert statistische Hardware Informationen auf dem LIP-Stick
+Comment=Speichert statistische Hardware Informationen auf dem LIP-Stick

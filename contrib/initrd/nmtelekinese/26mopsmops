@@ -1,0 +1,41 @@
+#!/bin/sh
+
+PREREQ=""
+DESCRIPTION="Enforcing MoPS disconnect"
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+       prereqs
+       exit 0
+       ;;
+esac
+
+. /scripts/casper-functions
+load_confmodule
+
+log_begin_msg "$DESCRIPTION"
+
+# Starting nmtelekinese with the MoPS network
+cp /lip/nm/nmtelekinese.py /root/usr/bin/
+chroot /root mkdir -m 755 -p /home/${USERNAME}/.config/autostart
+cp /lip/nm/nmtelekinese.desktop /root/home/${USERNAME}/.config/autostart
+chroot /root chmod 755 /home/${USERNAME}/.config/autostart/nmtelekinese.desktop
+chroot /root chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config
+
+# Denying all connections to redirector.wlan.rwth-aachen.de
+mount -t proc none /root/proc
+chroot /root modprobe ip_tables
+chroot /root modprobe iptable_filter
+chroot /root modprobe ipt_REJECT
+chroot /root iptables -I OUTPUT 1 -d 137.226.8.34 -j REJECT --reject-with icmp-host-prohibited
+chroot /root iptables -I OUTPUT 1 -d 137.226.8.34 -p tcp -j REJECT --reject-with tcp-rst
+umount /root/proc
+
+log_end_msg
+

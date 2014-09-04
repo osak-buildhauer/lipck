@@ -1,0 +1,11 @@
+
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/python /usr/bin/nmtelekinese.py 134.61.32.0/21
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[de_DE]=NM Telekinese 
+Name=NM Telekinese 
+Comment[de_DE]=Verdindert das Verbinden zu gefärlichen Netzwerken
+Comment=Verdindert das Verbinden zu gefärlichen Netzwerken
