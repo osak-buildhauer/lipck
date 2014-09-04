@@ -1,0 +1,9 @@
+WORKSPACE=$(CURDIR)/workspace
+PRIMARY_ARCH=x86_64
+SECONDARY_ARCH=i686
+
+#Image sources
+ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu/releases
+ISO_RELEASE=trusty
+ISO_VERSION=14.04.1
+ISO_FLAVOR=kubuntu
