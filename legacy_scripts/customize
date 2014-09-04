@@ -1,0 +1,88 @@
+#!/bin/bash
+
+#is this true for all uck versions??
+SCRIPT_DIR=`dirname "$0"`
+
+#source common functions (e.g. patch_all)
+if [ -e "$SCRIPT_DIR/customize_common" ]; then
+	source "$SCRIPT_DIR/customize_common"
+fi
+
+function prepare_install()
+{
+	#if [ -e "$SCRIPT_DIR/lip_sources.list" ]; then
+	#	cp -v "$SCRIPT_DIR/lip_sources.list" "/etc/apt/sources.list"
+	#fi
+	
+	#moved to liprepoctl.sh 
+	#echo "# offline repository of the linux install party
+#deb [ trusted=yes ] file:/cdrom/archives precise lip" > /etc/apt/sources.list.d/lipoffline.list
+
+	#uncomment if newest texlive is not part of your distribution
+	#add-apt-repository -y ppa:texlive-backports/ppa
+
+	apt-get update
+}
+
+function install_packages()
+{
+	apt-get upgrade --assume-yes --force-yes
+	apt-get install aptitude -y
+
+	#aptitude full-upgrade -y # make sure we have the newest versions
+	# Some daily images do not have a kernel ?!?
+	
+	#uncomment this if you remaster a daily build (fix kernel version!)
+	#aptitude reinstall linux-image-generic-lts-raring -y
+	#apt-cache depends linux-image-generic-lts-raring | tail -n+2 | awk '{print $NF}' | xargs aptitude reinstall -y 
+
+	aptitude install firefox thunderbird kfind kompare xloadimage gpsd-clients kde-config-gtk-style -y
+	aptitude install automake cmake aspell-de build-essential ffmpeg htop hunspell  lvm2 mencoder screen tofrodos efibootmgr gdisk linux-headers vlc moreutils network-manager-vpnc vim -y # install general packages
+	aptitude install --without-recommends mdadm -y # install mdadm without mailserver
+	aptitude install chktex cm-super context dvidvi dvipng feynmf fragmaster info lacheck latex-beamer latex-cjk-all latexdiff latexmk latex-sanskrit latex-xcolor lcdf-typetools lmodern pgf prosper psutils purifyeps t1utils tex4ht tex-gyre texinfo texlive-base texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-fonts-recommended texlive-font-utils texlive-formats-extra texlive-games texlive-generic-extra texlive-generic-recommended texlive-humanities texlive-lang-english texlive-lang-german texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-math-extra texlive-metapost texlive-music texlive-omega texlive-pictures texlive-plain-extra texlive-pstricks texlive-publishers texlive-science texlive-xetex tipa xindy -y
+	aptitude install hunspell-de-de language-pack-de language-pack-support-de wngerman wogerman wswiss poppler-data libreoffice-l10n-de libreoffice-help-de hyphen-de mythes-de thunderbird-locale-de firefox-locale-de -y # install german language support
+	
+	MISSING_LANG_PKG="$(check-language-support -l de_DE)"
+	MISSING_LANG_PKG="$(check-language-support -l en_US) $MISSING_LANG_PKG" # check for missing packages for de_DE and en_US
+	
+	if [ -n "$MISSING_LANG_PKG" ]; then
+		aptitude install $MISSING_LANG_PKG -y
+	fi
+	
+	EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>")" # remove extra language packages
+
+	if [ -n "$EXTRA_LANG_PKG" ]; then
+		aptitude purge $EXTRA_LANG_PKG -y
+	fi
+	
+	install_debs "$SCRIPT_DIR/debs/"
+}
+
+function finalize()
+{
+	echo -n "Europe/Berlin" > /etc/timezone
+	
+	rm -rf /var/crash/*
+}
+
+function install_kde_defaults()
+{
+	mkdir -p /etc/skel/.kde/share/config/
+	cp "$SCRIPT_DIR/kde_config/"* /etc/skel/.kde/share/config/
+}
+
+prepare_install
+install_packages
+
+install_kde_defaults
+#moved to initrd
+#cp "$SCRIPT_DIR/no-bootloader-icon/ubiquity-gtkui-no-bootloader.desktop" /usr/share/applications/
+
+#patch rootfs
+patch_all "$SCRIPT_DIR/rootfs-patches/" "/"
+
+#i.e. required for applying default-wallpaper patch
+#echo "compiling glib2 schemas..."
+#glib-compile-schemas /usr/share/glib-2.0/schemas
+
+finalize
