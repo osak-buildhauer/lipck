@@ -58,9 +58,13 @@ iso_clean :
 	$(RM) -r "$(ISO_IMAGE_DEST)"
 
 #TODO: generic unsquash/squash with magic make variables ($@ etc.)
-rootfs_unsquash : | $(SQUASHFS_SOURCE)
+rootfs_unsquash $(ROOTFS) : | $(SQUASHFS_SOURCE)
 	$(RM) -r "$(ROOTFS)"
 	unsquashfs -f -d "$(ROOTFS)" "$(SQUASHFS_SOURCE)"
+
+rootfs_prepare : $(ROOTFS)
+	mkdir -p "$(ROOTFS)/remaster"
+	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(ROOTFS)/remaster"
 
 initrd_unpack : | $(INITRD_SOURCE)
 	mkdir -p "$(INITRD)"

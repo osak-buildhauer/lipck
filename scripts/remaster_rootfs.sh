@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_DIR="$1"
-CONTRIB_DIR="$SCRIPT_DIR/contrib/rootfs"
+SCRIPT_DIR="/remaster"
+CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 
 #TODO: Disable initctl
 
