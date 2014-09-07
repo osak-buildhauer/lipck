@@ -3,12 +3,27 @@
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 
-#TODO: Disable initctl
-
 #source common functions (e.g. patch_all)
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
 	source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
+
+if [ ! -d "$SCRIPT_DIR" ]; then
+	echo "Error: Missing remaster directory/files. Abort."
+	exit 2
+fi
+
+function divert_initctl()
+{
+	dpkg-divert --local --rename --add /sbin/initctl
+	ln -s /bin/true /sbin/initctl
+}
+
+function revert_initctl()
+{
+	rm /sbin/initctl
+	dpkg-divert --local --rename --remove /sbin/initctl
+}
 
 function prepare_install()
 {
@@ -83,6 +98,8 @@ function install_kde_defaults()
 	cp "$CONTRIB_DIR/kde_config/"* /etc/skel/.kde/share/config/
 }
 
+divert_initctl
+
 prepare_install
 install_packages
 
@@ -95,4 +112,5 @@ patch_all "$SCRIPT_DIR/patches/" "/"
 #echo "compiling glib2 schemas..."
 #glib-compile-schemas /usr/share/glib-2.0/schemas
 
+revert_initctl
 finalize
