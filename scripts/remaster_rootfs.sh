@@ -89,7 +89,7 @@ install_packages
 install_kde_defaults
 
 #patch rootfs
-patch_all "$SCRIPT_DIR/patches/rootfs/" "/"
+patch_all "$SCRIPT_DIR/patches/" "/"
 
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
