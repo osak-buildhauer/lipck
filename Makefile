@@ -66,6 +66,9 @@ rootfs_prepare : $(ROOTFS)
 	mkdir -p "$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(ROOTFS)/remaster"
 
+rootfs_clean :
+	$(RM) -r "$(ROOTFS)"
+
 initrd_unpack : | $(INITRD_SOURCE)
 	mkdir -p "$(INITRD)"
 	cd "$(INITRD)" && lzma -d < "$(INITRD_SOURCE)" | cpio -i
@@ -90,4 +93,4 @@ config $(CONFIG_FILE) :
 config_clean :
 	$(RM) $(CONFIG_FILE)
 
-.PHONY : config config_clean iso_clean initrd_clean
+.PHONY : config config_clean iso_clean initrd_clean rootfs_clean
