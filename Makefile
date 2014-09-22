@@ -31,6 +31,7 @@ SQUASHFS_SOURCE=$(CASPER_SOURCE_DIR)/filesystem.squashfs
 ROOTFS=$(WORKSPACE)/$(ARCH)/rootfs
 INITRD=$(WORKSPACE)/$(ARCH)/initrd
 INITRD_TARGET=$(WORKSPACE)/$(ARCH)/initrd.lz
+STATE_DIR=$(WORKSPACE)/$(ARCH)/state
 
 $(info Architecture: $(ARCH) ($(ALTARCH)))
 $(info Workspace: $(WORKSPACE))
@@ -38,7 +39,8 @@ $(info Workspace: $(WORKSPACE))
 workspace : $(WORKSPACE)
 
 $(WORKSPACE) :
-	mkdir -p $(WORKSPACE)
+	mkdir -p "$(WORKSPACE)"
+	mkdir -p "$(STATE_DIR)"
 
 iso_download $(ISO_IMAGE) : | $(WORKSPACE)
 	mkdir -p "$(ISO_IMAGE_DEST)"
@@ -49,38 +51,46 @@ iso_download $(ISO_IMAGE) : | $(WORKSPACE)
 	cd "$(ISO_IMAGE_DEST)" && sha256sum -c SHA256SUMS
 	mv "$(ISO_IMAGE_DEST)/$(ISO_NAME)" "$(ISO_IMAGE)"
 
-iso_content $(INITRD_SOURCE) $(SQUASHFS_SOURCE) : $(ISO_IMAGE)
+iso_content $(STATE_DIR)/iso_exctracted : $(ISO_IMAGE)
 	mkdir -p "$(ISO_CONTENT)"
 	7z x -o"$(ISO_CONTENT)" -aos "$(ISO_IMAGE)"
+	touch "$(STATE_DIR)/iso_exctracted"
 
 iso_clean :
 	$(RM) "$(ISO_IMAGE)"
 	$(RM) -r "$(ISO_IMAGE_DEST)"
+	$(RM) "$(STATE_DIR)/iso_exctracted"
 
 #TODO: generic unsquash/squash with magic make variables ($@ etc.)
-rootfs_unsquash $(ROOTFS) : | $(SQUASHFS_SOURCE)
+rootfs_unsquash $(ROOTFS) : $(STATE_DIR)/iso_exctracted
 	$(RM) -r "$(ROOTFS)"
 	unsquashfs -f -d "$(ROOTFS)" "$(SQUASHFS_SOURCE)"
+	touch "$(STATE_DIR)/rootfs_extracted"
 
-rootfs_prepare : $(ROOTFS)
+rootfs_prepare : $(ROOTFS) : $(STATE_DIR)/rootfs_extracted
 	mkdir -p "$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(ROOTFS)/remaster"
 
 rootfs_clean :
 	$(RM) -r "$(ROOTFS)"
+	$(RM) "$(STATE_DIR)/rootfs_extracted"
 
-initrd_unpack : | $(INITRD_SOURCE)
+initrd_unpack $(STATE_DIR)/initrd_extracted : $(STATE_DIR)/iso_exctracted
 	mkdir -p "$(INITRD)"
 	cd "$(INITRD)" && lzma -d < "$(INITRD_SOURCE)" | cpio -i
+	touch "$(STATE_DIR)/initrd_extracted"
 
 initrd_clean :
 	$(RM) -r "$(INITRD)"
 	$(RM) "$(INITRD_TARGET)"
+	$(RM) "$(STATE_DIR)/initrd_extracted"
+	$(RM) "$(STATE_DIR)/initrd_remastered"
 
-initrd_remaster :
+initrd_remaster $(STATE_DIR)/initrd_remastered : $(STATE_DIR)/initrd_extracted
 	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(INITRD)"
+	touch "$(STATE_DIR)/initrd_remastered"
 
-initrd_pack :
+initrd_pack $(INITRD_TARGET) : $(STATE_DIR)/initrd_remastered
 	cd "$(INITRD)" && find | cpio -H newc -o | lzma -z > "$(INITRD_TARGET)"
 
 config $(CONFIG_FILE) :
