@@ -17,12 +17,18 @@ function divert_initctl()
 {
 	dpkg-divert --local --rename --add /sbin/initctl
 	ln -s /bin/true /sbin/initctl
+	# Fix sysvinit legacy invoke-rc.d issue with nonexisting scripts
+	dpkg-divert --local --rename --add /usr/sbin/invoke-rc.d
+	ln -s /bin/true /usr/sbin/invoke-rc.d
 }
 
 function revert_initctl()
 {
 	rm /sbin/initctl
 	dpkg-divert --local --rename --remove /sbin/initctl
+	# Fix sysvinit legacy invoke-rc.d issue with nonexisting scripts
+	rm /usr/sbin/invoke-rc.d
+	dpkg-divert --local --rename --remove /usr/sbin/invoke-rc.d
 }
 
 function prepare_install()
@@ -89,7 +95,10 @@ function finalize()
 	
 	rm -rf /var/crash/*
 	#TODO: verify
-	rm -rf /var/cache/apt/*
+	if [ -z "$LIPCK_HAS_APT_CACHE" ]
+	then
+	  rm -rf /var/cache/apt/*
+	fi
 }
 
 function install_kde_defaults()
