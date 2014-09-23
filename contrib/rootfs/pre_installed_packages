@@ -1,19 +1,21 @@
 #Desktop stuff for Kubuntu
-firefox
 thunderbird
 kfind
 kompare
 xloadimage
 gpsd-clients
 kde-config-gtk-style
-ffmpeg
+libav-tools
 hunspell
 vlc
+x2goclient
+p7zip-full
+unrar-free
+kile
 
 #System stuff, e.g. gcc and efibootmgr
 automake
 cmake
-aspell-de
 build-essential
 lvm2
 mencoder
@@ -26,6 +28,7 @@ moreutils
 network-manager-vpnc
 vim
 htop
+git
 
 #texlive
 chktex
@@ -87,7 +90,6 @@ xindy
 #german language support
 hunspell-de-de
 language-pack-de
-language-pack-support-de
 wngerman
 wogerman
 wswiss
@@ -96,5 +98,6 @@ libreoffice-l10n-de
 libreoffice-help-de
 hyphen-de
 mythes-de
+aspell-de
 thunderbird-locale-de
 firefox-locale-de
