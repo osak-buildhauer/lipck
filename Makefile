@@ -74,6 +74,9 @@ iso_clean:
 apt_cache $(APT_CACHE_DIR): |$(WORKSPACE)
 	mkdir -p "$(APT_CACHE_DIR)"
 
+apt_cache_clean:
+	$(RM) -r "$(APT_CACHE_DIR)"
+
 #TODO: generic unsquash/squash with magic make variables ($@ etc.)
 rootfs_unsquash $(ARCH_DIR)$(STATE_DIR)/rootfs_extracted: $(ARCH_DIR)$(STATE_DIR) $(ARCH_DIR)$(STATE_DIR)/iso_extracted
 	$(RM) -r "$(ARCH_DIR)$(ROOTFS)"
@@ -169,4 +172,4 @@ config $(CONFIG_FILE):
 config_clean:
 	$(RM) $(CONFIG_FILE)
 
-.PHONY : config config_clean iso_clean initrd_clean rootfs_clean
+.PHONY : config config_clean iso_clean initrd_clean rootfs_clean apt_cache_clean
