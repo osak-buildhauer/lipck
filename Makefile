@@ -135,6 +135,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)
 rootfs_clean:
 	$(RM) -r "$(ARCH_DIR)$(ROOTFS)"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_extracted"
+	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_prepared"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_remastered"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_finalized"
 	$(RM) -rf $(ARCH_DIR)$(LXC_DIR)
