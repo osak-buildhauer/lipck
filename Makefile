@@ -83,7 +83,7 @@ rootfs_unsquash $(ARCH_DIR)$(STATE_DIR)/rootfs_extracted: $(ARCH_DIR)$(STATE_DIR
 	unsquashfs -f -d "$(ARCH_DIR)$(ROOTFS)" "$(ARCH_DIR)$(SQUASHFS_SOURCE)"
 	touch "$(ARCH_DIR)$(STATE_DIR)/rootfs_extracted"
 
-rootfs_prepare $(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh: $(ARCH_DIR)$(STATE_DIR)/rootfs_extracted $(ARCH_DIR)$(STATE_DIR) /etc/resolv.conf
+rootfs_prepare $(ARCH_DIR)$(STATE_DIR)/rootfs_prepared: $(ARCH_DIR)$(STATE_DIR)/rootfs_extracted $(ARCH_DIR)$(STATE_DIR) /etc/resolv.conf
 	if [ -e "$(ARCH_DIR)$(ROOTFS)/etc/resolv.conf" ]; then cp "$(ARCH_DIR)$(ROOTFS)/etc/resolv.conf" "$(ARCH_DIR)$(ROOTFS)/etc/resolv.conf.bak"; fi
 	test ! -e "$(ARCH_DIR)$(ROOTFS)/usr/sbin/init.lxc"
 	test ! -e "$(ARCH_DIR)$(ROOTFS)/remaster/"
@@ -97,8 +97,9 @@ rootfs_prepare $(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh: $(ARCH_DIR)$(STATE
 	echo "export PATH; export TERM=$(TERM); export LIPCK_HAS_APT_CACHE=1" >> "$(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh"
 	echo "source /remaster/scripts/remaster_rootfs.sh" >> "$(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh"
 	chmod +x "$(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh"
+	touch "$(ARCH_DIR)$(STATE_DIR)/rootfs_prepared"
 
-rootfs_remaster $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered: $(ARCH_DIR)$(ROOTFS)/remaster/remaster.gen.sh |$(ARCH_DIR)$(STATE_DIR) $(APT_CACHE_DIR)
+rootfs_remaster $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered: $(ARCH_DIR)$(STATE_DIR)/rootfs_prepared |$(ARCH_DIR)$(STATE_DIR) $(APT_CACHE_DIR)
 	mkdir -p "$(ARCH_DIR)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$(ARCH)" -P "$(ARCH_DIR)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$(ARCH)" -s lxc.rootfs="$(ARCH_DIR)$(ROOTFS)" \
