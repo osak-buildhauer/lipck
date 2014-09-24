@@ -18,10 +18,18 @@ ifeq ($(ARCH),i686)
   ALTARCH=i386
 endif
 
-ARCH_DIR=$(WORKSPACE)/$(ARCH)
-PRIMARY_ARCH_DIR=$(WORKSPACE)/$(PRIMARY_ARCH)
-SECONDARY_ARCH_DIR=$(WORKSPACE)/$(SECONDARY_ARCH)
-COMMON_DIR=$(WORKSPACE)/commom
+define archdir =
+$(WORKSPACE)/$1
+endef
+
+ARCH_DIR=$(call archdir,$(ARCH))
+PRIMARY_ARCH_DIR=$(call archdir,$(PRIMARY_ARCH))
+SECONDARY_ARCH_DIR=$(call archdir,$(SECONDARY_ARCH))
+COMMON_DIR=$(WORKSPACE)/common
+
+define gentargets =
+$(PRIMARY_ARCH_DIR)$1 $(SECONDARY_ARCH_DIR)$1 : $(call archdir,%)$1
+endef
 
 ISO_IMAGE_DEST=/iso
 ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
@@ -43,14 +51,6 @@ CHECKSUMS=/rootfs.md5sums
 
 $(info Architecture: $(ARCH) ($(ALTARCH)))
 $(info Workspace: $(WORKSPACE))
-
-define gentargets =
-$(PRIMARY_ARCH_DIR)$1 $(SECONDARY_ARCH_DIR)$1 : $(WORKSPACE)/%$1
-endef
-
-define archdir =
-$(WORKSPACE)/$1
-endef
 
 workspace: $(WORKSPACE)
 
