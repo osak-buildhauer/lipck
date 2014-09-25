@@ -116,7 +116,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 rootfs_remaster : $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered
 $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR)/rootfs_prepared | $(APT_CACHE_DIR)
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
-	lxc-execute --name "lipck_remaster_$(ARCH)" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
+	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$*" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
 	-s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$*)$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
 	-s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
