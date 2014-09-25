@@ -60,7 +60,7 @@ function install_packages_from_file()
 
 function install_packages()
 {
-	apt-get upgrade --assume-yes --force-yes
+	apt-get dist-upgrade --assume-yes --force-yes
 	apt-get install aptitude -y
 
 	#aptitude full-upgrade -y # make sure we have the newest versions
