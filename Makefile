@@ -97,10 +97,14 @@ $(call gentargets,$(STATE_DIR)/rootfs_extracted) : $(call archdir,%)$(STATE_DIR)
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_extracted"
 
 rootfs_prepare : $(ARCH_DIR)$(STATE_DIR)/rootfs_prepared
-$(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/rootfs_extracted /etc/resolv.conf
-	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; then cp "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; fi
+$(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/rootfs_extracted
+	test ! -e /etc/resolv.conf
 	test ! -e "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	test ! -e "$(call archdir,$*)$(ROOTFS)/remaster/"
+	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; \
+	then \
+		cp "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
+	fi
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	echo "shift; exec \$$@" >> "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	chmod +x "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
