@@ -173,7 +173,7 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
 
 $(COMMON_DIR)/lip-%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $(COMMON_DIR)/lip-%
-	mksquashfs "$(COMMON_DIR)/lip-$*" "$(COMMON_DIR)/lip-$*.squashfs" -comp xz
+	mksquashfs "$(COMMON_DIR)/lip-$*" "$(COMMON_DIR)/lip-$*.squashfs" -comp xz -noappend
 
 rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs
 
@@ -216,7 +216,7 @@ image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" "$(IMAGE_DIR)/"
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" "$(IMAGE_DIR)/"
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preserved" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preseed" "$(IMAGE_DIR)/"
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/.disk" "$(IMAGE_DIR)/"
 	cp -r "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
 	mkdir -p "$(IMAGE_DIR)/casper"
