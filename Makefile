@@ -149,6 +149,10 @@ rootfs_checksums : $(ARCH_DIR)$(CHECKSUMS)
 $(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	cd "$(call archdir,$*)$(ROOTFS)" && find . -type f -print0 | sort -z | xargs -0 md5sum > "$(call archdir,$*)$(CHECKSUMS)"
 
+rootfs_fszize: $(ARCH_DIR)/filesystem.size
+$(call gentargets,/filesystem.size) : $(call archdir,%)$(STATE_DIR)/rootfs_remastered
+	$$(($$(du -s "$(call archdir,$*)$(ROOTFS)"|cut -f1) * 512)) > $(call archdir,$*)/filesystem.size
+
 rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH_DIR)$(CHECKSUMS) $(SECONDARY_ARCH_DIR)$(CHECKSUMS)
 	mkdir -p "$(COMMON_DIR)$(STATE_DIR)"
 	mkdir -p "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)" "$(COMMON_DIR)/lip-common"
@@ -201,7 +205,8 @@ image_git_pull: |$(IMAGE_DIR)/.git
 
 IMAGE_BINARIES= $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs \
 $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
-$(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted
+$(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted \
+$(PRIMARY_ARCH_DIR)/filesystem.size
 image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot" "$(IMAGE_DIR)/"
 	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" "$(IMAGE_DIR)/"
@@ -217,6 +222,7 @@ image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	cp "$(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs" "$(IMAGE_DIR)/casper/"
 	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest" "$(IMAGE_DIR)/casper/"
 	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest-remove" "$(IMAGE_DIR)/casper/"
+	cp "$(PRIMARY_ARCH_DIR)/filesystem.size" "$(IMAGE_DIR)/casper/"
 	cp "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
 	cp "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
