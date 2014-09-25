@@ -99,7 +99,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_extracted) : $(call archdir,%)$(STATE_DIR)
 
 rootfs_prepare : $(ARCH_DIR)$(STATE_DIR)/rootfs_prepared
 $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/rootfs_extracted
-	test ! -e /etc/resolv.conf
+	test -e /etc/resolv.conf
 	test ! -e "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	test ! -e "$(call archdir,$*)$(ROOTFS)/remaster/"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; \
