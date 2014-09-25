@@ -157,9 +157,11 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	$(info Copying common files...)
 	rsync -av --files-from="$(COMMON_DIR)/common_files.list" "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-common"
 	$(info Copying $(PRIMARY_ARCH) files...)
-	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)"
+	rsync -av "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)"
+	cd "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)" && tr \\n \\0 < "$(COMMON_DIR)/common_files.list" | xargs -0 rm 
 	$(info Copying $(SECONDARY_ARCH) files...)
-	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(SECONDARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
+	rsync -av "$(SECONDARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
+	cd "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)" && tr \\n \\0 < "$(COMMON_DIR)/common_files.list" | xargs -0 rm 
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
 
 $(COMMON_DIR)/lip%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $(COMMON_DIR)/lip-%
