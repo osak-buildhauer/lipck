@@ -155,7 +155,7 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	$(info Copying $(PRIMARY_ARCH) files...)
 	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)"
 	$(info Copying $(SECONDARY_ARCH) files...)
-	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(SECONDARY_ARCH)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
+	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(SECONDARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
 
 rootfs_squash: $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated
