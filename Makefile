@@ -53,15 +53,15 @@ CHECKSUMS=/rootfs.md5sums
 $(info Architecture: $(ARCH) ($(ALTARCH)))
 $(info Workspace: $(WORKSPACE))
 
-workspace: $(WORKSPACE)
+workspace: | $(WORKSPACE)
 
 $(WORKSPACE) :
 	mkdir -p "$(WORKSPACE)"
 
-$(call gentargets,) : $(WORKSPACE)
+$(call gentargets,) : | $(WORKSPACE)
 	mkdir -p "$(WORKSPACE)/$*"
 
-$(call gentargets,$(STATE_DIR)) : $(WORKSPACE)/%
+$(call gentargets,$(STATE_DIR)) : | $(WORKSPACE)/%
 	mkdir -p "$(WORKSPACE)/$*$(STATE_DIR)"
 
 iso_download : $(ARCH_DIR)$(ISO_IMAGE)
@@ -75,7 +75,7 @@ $(call gentargets,$(ISO_IMAGE)) : | $(call archdir,%)
 	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE)"
 
 iso_content : $(ARCH_DIR)$(STATE_DIR)/iso_extracted
-$(call gentargets,$(STATE_DIR)/iso_extracted) : $(call archdir,%)$(ISO_IMAGE) $(call archdir,%)$(STATE_DIR)
+$(call gentargets,$(STATE_DIR)/iso_extracted) : $(call archdir,%)$(ISO_IMAGE) | $(call archdir,%)$(STATE_DIR)
 	mkdir -p "$(call archdir,$*)$(ISO_CONTENT)"
 	7z x -o"$(call archdir,$*)$(ISO_CONTENT)" -aos "$(call archdir,$*)$(ISO_IMAGE)"
 	touch "$(call archdir,$*)$(STATE_DIR)/iso_extracted"
