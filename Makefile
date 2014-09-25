@@ -26,6 +26,7 @@ ARCH_DIR=$(call archdir,$(ARCH))
 PRIMARY_ARCH_DIR=$(call archdir,$(PRIMARY_ARCH))
 SECONDARY_ARCH_DIR=$(call archdir,$(SECONDARY_ARCH))
 COMMON_DIR=$(WORKSPACE)/common
+IMAGE_DIR=$(WORKSPACE)/image
 
 define gentargets =
 $(PRIMARY_ARCH_DIR)$1 $(SECONDARY_ARCH_DIR)$1 : $(call archdir,%)$1
@@ -164,10 +165,10 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	cd "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)" && tr \\n \\0 < "$(COMMON_DIR)/common_files.list" | xargs -0 rm 
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
 
-$(COMMON_DIR)/lip%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $(COMMON_DIR)/lip-%
-	mksquashfs "$(COMMON_DIR)/lip-$*" "$(COMMON_DIR)/lip$*.squashfs" -comp xz
+$(COMMON_DIR)/lip-%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $(COMMON_DIR)/lip-%
+	mksquashfs "$(COMMON_DIR)/lip-$*" "$(COMMON_DIR)/lip-$*.squashfs" -comp xz
 
-rootfs_squash: $(COMMON_DIR)/lip$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lipcommon.squashfs
+rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs
 
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
@@ -189,6 +190,37 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma -z > "$(call archdir,$*)$(INITRD_TARGET)"
+
+image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
+	mkdir -p "$(IMAGE_DIR)"
+	test ! -e "$(IMAGE_DIR)/.git"
+	cd "$(IMAGE_DIR)" && git clone "$(IMAGE_GIT_URL)" .
+
+image_git_pull: |$(IMAGE_DIR)/.git
+	cd "$(IMAGE_DIR)" && ./scripts/update_stick.sh "$(IMAGE_GIT_BRANCH)"
+
+IMAGE_BINARIES= $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs \
+$(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
+$(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted
+image_binary_files: image_git_pull $(IMAGE_BINARIES)
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preserved" "$(IMAGE_DIR)/"
+	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/.disk" "$(IMAGE_DIR)/"
+	cp -r "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
+	mkdir -p "$(IMAGE_DIR)/casper"
+	cp "$(COMMON_DIR)/lip-common.squashfs" "$(IMAGE_DIR)/casper/"
+	cp "$(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs" "$(IMAGE_DIR)/casper/"
+	cp "$(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs" "$(IMAGE_DIR)/casper/"
+	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest" "$(IMAGE_DIR)/casper/"
+	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest-remove" "$(IMAGE_DIR)/casper/"
+	cp "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
+	cp "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
+	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
+	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 
 config $(CONFIG_FILE):
 	$(info Generating configuration $(CONFIG_FILE))

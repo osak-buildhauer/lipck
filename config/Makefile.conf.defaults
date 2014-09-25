@@ -7,3 +7,6 @@ ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu/releases
 ISO_RELEASE=trusty
 ISO_VERSION=14.04.1
 ISO_FLAVOR=kubuntu
+
+IMAGE_GIT_URL=https://learninglinux.fsmpi.rwth-aachen.de/git/lipstick.git
+IMAGE_GIT_BRANCH=ws14
