@@ -162,10 +162,10 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	rsync -av --exclude-from="$(COMMON_DIR)/common_files.list" "$(SECONDARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
 
-rootfs_squash: $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated
-	mksquashfs "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)" "$(COMMON_DIR)/lip$(PRIMARY_ARCH).squashfs" -comp xz
-	mksquashfs "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)" "$(COMMON_DIR)/lip$(SECONDARY_ARCH).squashfs" -comp xz
-	mksquashfs "$(COMMON_DIR)/lip-common" "$(COMMON_DIR)/lipcommon.squashfs" -comp xz
+$(COMMON_DIR)/lip%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $(COMMON_DIR)/lip-%
+	mksquashfs "$(COMMON_DIR)/lip-$*" "$(COMMON_DIR)/lip$*.squashfs" -comp xz
+
+rootfs_squash: $(COMMON_DIR)/lip$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lipcommon.squashfs
 
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
