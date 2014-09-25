@@ -109,9 +109,16 @@ function install_kde_defaults()
 	cp "$CONTRIB_DIR/kde_config/"* /etc/skel/.kde/share/config/
 }
 
+function copy_modprobe_d()
+{
+	cp -r "$SCRIPT_DIR/contrib/modprobe.d/" "/etc/modprobe.d/"
+	update-initramfs -u
+}
+
 divert_initctl
 
 prepare_install
+copy_modprobe_d
 install_packages
 
 install_kde_defaults
