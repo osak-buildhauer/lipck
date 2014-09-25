@@ -231,6 +231,8 @@ image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 
+image : image_binary_files
+
 config $(CONFIG_FILE):
 	$(info Generating configuration $(CONFIG_FILE))
 	echo -n "" > $(CONFIG_FILE)
@@ -245,6 +247,6 @@ ISO_PHONY=iso_download iso_content iso_clean
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
-IMAGE_PHONY=image_git image_git_pull image_binary_files
+IMAGE_PHONY=image image_git image_git_pull image_binary_files
 
 .PHONY : workspace config config_clean $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
