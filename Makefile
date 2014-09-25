@@ -143,15 +143,18 @@ rootfs_clean:
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_prepared"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_remastered"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_finalized"
-	$(RM) -rf $(ARCH_DIR)$(LXC_DIR)
+	$(RM) "$(ARCH_DIR)/filesystem.size"
+	$(RM) -r $(ARCH_DIR)$(LXC_DIR)
 
 rootfs_checksums : $(ARCH_DIR)$(CHECKSUMS)
 $(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	cd "$(call archdir,$*)$(ROOTFS)" && find . -type f -print0 | sort -z | xargs -0 md5sum > "$(call archdir,$*)$(CHECKSUMS)"
 
-rootfs_fszize: $(ARCH_DIR)/filesystem.size
+rootfs_fssize: $(ARCH_DIR)/filesystem.size
 $(call gentargets,/filesystem.size) : $(call archdir,%)$(STATE_DIR)/rootfs_remastered
-	$$(($$(du -s "$(call archdir,$*)$(ROOTFS)"|cut -f1) * 512)) > $(call archdir,$*)/filesystem.size
+	IN_BYTES=$$(du -s "$(call archdir,$*)$(ROOTFS)"|cut -f1) && \
+	IN_SECTORS=$$(($$IN_BYTES * 512)) && \
+	echo $$IN_SECTORS > $(call archdir,$*)/filesystem.size
 
 rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH_DIR)$(CHECKSUMS) $(SECONDARY_ARCH_DIR)$(CHECKSUMS)
 	mkdir -p "$(COMMON_DIR)$(STATE_DIR)"
