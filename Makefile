@@ -198,4 +198,9 @@ config $(CONFIG_FILE):
 config_clean:
 	$(RM) $(CONFIG_FILE)
 
-.PHONY : config config_clean iso_clean initrd_clean rootfs_clean apt_cache_clean
+ISO_PHONY=iso_download iso_content iso_clean
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean
+INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
+APT_CACHE_PHONY=apt_cache apt_cache_clean
+
+.PHONY : workspace config config_clean $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY)
