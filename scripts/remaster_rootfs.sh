@@ -67,8 +67,10 @@ function install_packages()
 	# Some daily images do not have a kernel ?!?
 	
 	#uncomment this if you remaster a daily build (fix kernel version!)
-	#aptitude reinstall linux-image-generic-lts-raring -y
-	#apt-cache depends linux-image-generic-lts-raring | tail -n+2 | awk '{print $NF}' | xargs aptitude reinstall -y 
+	KERNEL_PKG=linux-signed-generic-lts-trusty
+	[ "$(uname -m)" == "x86_64" ] || KERNEL_PKG=linux-image-generic-lts-trusty
+	aptitude reinstall $KERNEL_PKG -y
+	apt-cache depends $KERNEL_PKG | tail -n+2 | awk '{print $NF}' | xargs aptitude reinstall -y
 
 	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages" ""
 	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages.without-recommends" "--without-recommends"
