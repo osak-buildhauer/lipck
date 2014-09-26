@@ -179,6 +179,9 @@ $(COMMON_DIR)/lip-%.squashfs : $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated | $
 
 rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs
 
+rootfs_common_clean:
+	$(RM) -r "$(COMMON_DIR)"
+
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
 	mkdir -p "$(call archdir,$*)$(INITRD)"
@@ -248,7 +251,7 @@ config_clean:
 	$(RM) $(CONFIG_FILE)
 
 ISO_PHONY=iso_download iso_content iso_clean
-ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_git image_git_pull image_binary_files
