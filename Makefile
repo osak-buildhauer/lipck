@@ -239,6 +239,7 @@ image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 
 image : image_binary_files
+	$(info Image is ready: $(IMAGE_DIR))
 
 config $(CONFIG_FILE):
 	$(info Generating configuration $(CONFIG_FILE))
