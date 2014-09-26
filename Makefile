@@ -71,7 +71,7 @@ $(call gentargets,$(ISO_IMAGE)) : | $(call archdir,%)
 	mkdir -p "$(call archdir,$*)$(ISO_IMAGE_DEST)"
 	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" -c "$(ISO_URL)/$(ISO_NAME)"
 	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" -c "$(ISO_URL)/SHA256SUMS"
-	grep "$(call archdir,$*)$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
+	grep "$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
 	$(RM) "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp"
 	cd "$(call archdir,$*)$(ISO_IMAGE_DEST)" && sha256sum -c SHA256SUMS
 	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE)"
