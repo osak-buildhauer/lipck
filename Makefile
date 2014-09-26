@@ -210,7 +210,7 @@ image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	cd "$(IMAGE_DIR)" && git clone "$(IMAGE_GIT_URL)" .
 
 image_git_pull: |$(IMAGE_DIR)/.git
-	cd "$(IMAGE_DIR)" && ./scripts/update_stick.sh "$(IMAGE_GIT_BRANCH)"
+	cd "$(IMAGE_DIR)" && $(SHELL) ./scripts/update_stick.sh "$(IMAGE_GIT_BRANCH)"
 
 IMAGE_BINARIES= $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs \
 $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
