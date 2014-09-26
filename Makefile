@@ -18,7 +18,7 @@ ifeq ($(ARCH),i686)
   ALTARCH=i386
 endif
 
-RSYNC=rsync -a --progress
+RSYNC=rsync -a
 
 define archdir =
 $(WORKSPACE)/$1
