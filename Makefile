@@ -279,7 +279,7 @@ ISO_PHONY=iso_download iso_content iso_clean
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
-IMAGE_PHONY=image image_git image_git_pull image_binary_files
+IMAGE_PHONY=image image_remaster image_git image_git_pull image_binary_files
 COMMON_PHONY=help workspace config config_clean
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
