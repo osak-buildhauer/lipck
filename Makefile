@@ -216,7 +216,7 @@ IMAGE_BINARIES= $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(S
 $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
 $(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted \
 $(PRIMARY_ARCH_DIR)/filesystem.size
-image_binary_files: image_git_pull $(IMAGE_BINARIES)
+image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" \
@@ -237,8 +237,14 @@ image_binary_files: image_git_pull $(IMAGE_BINARIES)
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
+	touch "$(IMAGE_DIR)/.lipbinaries"
 
-image : image_binary_files
+image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
+	$(CURDIR)/scripts/remaster_iso.sh "$(CURDIR)" "$(IMAGE_DIR)"
+	touch "$(IMAGE_DIR)/.remastered"
+
+image: image_git_pull $(IMAGE_DIR)/.remastered
+	$(info )
 	$(info Image is ready: $(IMAGE_DIR))
 
 config $(CONFIG_FILE):
