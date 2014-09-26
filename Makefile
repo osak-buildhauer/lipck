@@ -52,8 +52,6 @@ STATE_DIR=/state
 LXC_DIR=/lxc_container
 CHECKSUMS=/rootfs.md5sums
 
-$(info Architecture: $(ARCH) ($(ALTARCH)))
-$(info Workspace: $(WORKSPACE))
 
 workspace: | $(WORKSPACE)
 
@@ -251,10 +249,29 @@ config $(CONFIG_FILE):
 config_clean:
 	$(RM) $(CONFIG_FILE)
 
+help:
+	$(info Defaul Architecture: $(ARCH) ($(ALTARCH)))
+	$(info Workspace: $(WORKSPACE))
+	$(info You may specify the Architecture by setting ARCH=)
+	$(info )
+	$(info === How to run make ===)
+	$(info 1. Run make config as user e.g. "$$ make WORKSPACE=/media/drivewithspace config".)
+	$(info )
+	$(info 2. Run make image as root "# make image".)
+	$(info )
+	$(info There is a list of all available phony targets is available under "make listall")
+	@exit 0
+
+listall:
+	$(info Available targets: )
+	$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),$(info -$t))
+	@exit 0
+
 ISO_PHONY=iso_download iso_content iso_clean
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_git image_git_pull image_binary_files
+COMMON_PHONY=help workspace config config_clean
 
-.PHONY : workspace config config_clean $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
+.PHONY : $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
