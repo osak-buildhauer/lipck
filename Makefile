@@ -53,6 +53,9 @@ LXC_DIR=/lxc_container
 CHECKSUMS=/rootfs.md5sums
 
 
+default: help
+	@exit 0
+
 workspace: | $(WORKSPACE)
 
 $(WORKSPACE) :
@@ -274,4 +277,4 @@ APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_git image_git_pull image_binary_files
 COMMON_PHONY=help workspace config config_clean
 
-.PHONY : $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
+.PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
