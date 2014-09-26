@@ -165,12 +165,12 @@ rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH
 	diff --old-line-format="" --new-line-format="" --unchanged-line-format="%L" \
 	"$(PRIMARY_ARCH_DIR)$(CHECKSUMS)" "$(SECONDARY_ARCH_DIR)$(CHECKSUMS)" > "$(COMMON_DIR)$(CHECKSUMS)" || true
 	cut -d" " -f3- "$(COMMON_DIR)$(CHECKSUMS)" > "$(COMMON_DIR)/common_files.list"
-	$(info Copying common files...)
+	@echo "Copying common files..."
 	$(RSYNC) --files-from="$(COMMON_DIR)/common_files.list" "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-common"
-	$(info Copying $(PRIMARY_ARCH) files...)
+	@echo "Copying $(PRIMARY_ARCH) files..."
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)"
 	cd "$(COMMON_DIR)/lip-$(PRIMARY_ARCH)" && tr \\n \\0 < "$(COMMON_DIR)/common_files.list" | xargs -0 rm 
-	$(info Copying $(SECONDARY_ARCH) files...)
+	@echo "Copying $(SECONDARY_ARCH) files..."
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(ROOTFS)/" "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)"
 	cd "$(COMMON_DIR)/lip-$(SECONDARY_ARCH)" && tr \\n \\0 < "$(COMMON_DIR)/common_files.list" | xargs -0 rm 
 	touch "$(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated"
@@ -243,12 +243,20 @@ image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
 	$(CURDIR)/scripts/remaster_iso.sh "$(CURDIR)" "$(IMAGE_DIR)"
 	touch "$(IMAGE_DIR)/.remastered"
 
-image: image_git_pull $(IMAGE_DIR)/.remastered
-	$(info )
-	$(info Image is ready: $(IMAGE_DIR))
+image_content: image_git_pull $(IMAGE_DIR)/.remastered
+	@echo
+	@echo "Image content is ready: $(IMAGE_DIR)"
+
+image_skel_file: | $(WORKSPACE)
+	xz -d --keep --stdout "$(CURDIR)/contrib/image/multiboot.skel.img.xz" > "$(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
+	@echo
+	@echo "Image skeleton is ready: $(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
+	@echo "You may want to mount appropriately (e.g. with kpartx) and execute \"make IMAGE_DIR=/your/mountpoint image\""
+
+image : image_content
 
 config $(CONFIG_FILE):
-	$(info Generating configuration $(CONFIG_FILE))
+	@echo "Generating configuration $(CONFIG_FILE)"
 	echo -n "" > $(CONFIG_FILE)
 	echo "PRIMARY_ARCH=$(PRIMARY_ARCH)" >> "$(CONFIG_FILE)"
 	echo "SECONDARY_ARCH=$(SECONDARY_ARCH)" >> "$(CONFIG_FILE)"
@@ -258,28 +266,29 @@ config_clean:
 	$(RM) $(CONFIG_FILE)
 
 help:
-	$(info Defaul Architecture: $(ARCH) ($(ALTARCH)))
-	$(info Workspace: $(WORKSPACE))
-	$(info You may specify the Architecture by setting ARCH=)
-	$(info )
-	$(info === How to run make ===)
-	$(info 1. Run make config as user e.g. "$$ make WORKSPACE=/media/drivewithspace config".)
-	$(info )
-	$(info 2. Run make image as root "# make image".)
-	$(info )
-	$(info There is a list of all available phony targets is available under "make listall")
-	@exit 0
+	@echo "Defaul Architecture: $(ARCH) ($(ALTARCH))"
+	@echo "Workspace: $(WORKSPACE)"
+	@echo "You may specify the Architecture by setting ARCH="
+	@echo
+	@echo "=== How to run make ==="
+	@echo "0. Run make config as user e.g. \"\$$ make WORKSPACE=/media/drivewithspace config\"."
+	@echo "1. Optional: Run \"make image_skel_file\" to obtain an empty image file."
+	@echo "   You may specify the target file with IMAGE_FILE="
+	@echo "2. Run make image as root \"# make image\"."
+	@echo "   If you have mounted an image/partition (e.g. an empty image created in 1.) set IMAGE_DIR to the mount point,"
+	@echo "   (e.g. \"# make IMAGE_DIR=/your/mountpoint image\") to update it."
+	@echo
+	@echo "There is a list of all available phony targets is available under \"make listall\""
 
 listall:
-	$(info Available targets: )
-	$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),$(info -$t))
-	@exit 0
+	@echo "Available targets: "
+	@echo -e "$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),\n-$t)"
 
 ISO_PHONY=iso_download iso_content iso_clean
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
-IMAGE_PHONY=image image_remaster image_git image_git_pull image_binary_files
+IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files
 COMMON_PHONY=help workspace config config_clean
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
