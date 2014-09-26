@@ -213,25 +213,27 @@ $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
 $(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted \
 $(PRIMARY_ARCH_DIR)/filesystem.size
 image_binary_files: image_git_pull $(IMAGE_BINARIES)
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preseed" "$(IMAGE_DIR)/"
-	cp -r "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/.disk" "$(IMAGE_DIR)/"
-	cp -r "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preseed" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/.disk" \
+		 "$(IMAGE_DIR)/"#<-- rsync target
+	$(RYNC)  "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
 	mkdir -p "$(IMAGE_DIR)/casper"
-	cp "$(COMMON_DIR)/lip-common.squashfs" "$(IMAGE_DIR)/casper/"
-	cp "$(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs" "$(IMAGE_DIR)/casper/"
-	cp "$(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs" "$(IMAGE_DIR)/casper/"
-	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest" "$(IMAGE_DIR)/casper/"
-	cp "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest-remove" "$(IMAGE_DIR)/casper/"
-	cp "$(PRIMARY_ARCH_DIR)/filesystem.size" "$(IMAGE_DIR)/casper/"
-	cp "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
-	cp "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
-	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
-	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && cp -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
+	$(RSYNC) --progress "$(COMMON_DIR)/lip-common.squashfs" \
+		 "$(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs" \
+		 "$(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest" \
+		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/casper/filesystem.manifest-remove" \
+		 "$(PRIMARY_ARCH_DIR)/filesystem.size" \
+		 "$(IMAGE_DIR)/casper/"#<-- rsync target
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
+	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
+	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
+	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 
 image : image_binary_files
 
