@@ -217,15 +217,14 @@ $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
 $(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted \
 $(PRIMARY_ARCH_DIR)/filesystem.size
 image_binary_files: image_git_pull $(IMAGE_BINARIES)
-	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot" \
-		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" \
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/pool" \
-		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/preseed" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/.disk" \
 		 "$(IMAGE_DIR)/"
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI/BOOTx64.EFI" "$(IMAGE_DIR)/efi/boot/"
 	mkdir -p "$(IMAGE_DIR)/casper"
 	$(RSYNC) --progress "$(COMMON_DIR)/lip-common.squashfs" \
 		 "$(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs" \
