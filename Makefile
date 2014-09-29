@@ -205,9 +205,12 @@ $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remas
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma -z > "$(call archdir,$*)$(INITRD_TARGET)"
 
 image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
-	mkdir -p "$(IMAGE_DIR)"
 	test ! -e "$(IMAGE_DIR)/.git"
-	cd "$(IMAGE_DIR)" && git clone "$(IMAGE_GIT_URL)" .
+	mkdir -p "$(IMAGE_DIR)"
+	cd "$(IMAGE_DIR)" && git init
+	cd "$(IMAGE_DIR)" && git remote add origin "$(IMAGE_GIT_URL)"
+	cd "$(IMAGE_DIR)" && git fetch
+	cd "$(IMAGE_DIR)" && git checkout -t "origin/$(IMAGE_GIT_BRANCH)"
 
 image_git_pull: |$(IMAGE_DIR)/.git
 	cd "$(IMAGE_DIR)" && $(SHELL) ./scripts/update_stick.sh "$(IMAGE_GIT_BRANCH)"
