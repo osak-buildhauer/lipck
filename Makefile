@@ -4,9 +4,8 @@ CONFIG_FILE=$(CURDIR)/config/Makefile.conf
 include $(CONFIG_FILE_DEFAULTS)
 include $(CONFIG_FILE)
 
-#list of offically supported config options; they should have a default value in CONFIG_FILE_DEFAULTS
-CONFIGURABLE=PRIMARY_ARCH SECONDARY_ARCH WORKSPACE ISO_BASE_URL ISO_RELEASE ISO_VERSION ISO_FLAVOR \
-	IMAGE_GIT_URL IMAGE_GIT_BRANCH
+#read all offically config options from CONFIG_FILE_DEFAULTS
+CONFIGURABLE=$(shell cat "$(CONFIG_FILE_DEFAULTS)" | grep -v "^\#" | cut -s -d"=" -f1)
 
 ifndef ARCH
   ARCH=$(PRIMARY_ARCH)
