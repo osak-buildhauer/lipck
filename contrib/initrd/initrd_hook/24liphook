@@ -2,7 +2,8 @@
 
 PREREQ=""
 DESCRIPTION="lip specific stuff"
-LIP_HOOKS="/cdrom/initrd_hooks/"
+LIP_STICK="/root/cdrom/"
+LIP_HOOKS="$LIP_STICK/initrd_hooks/"
 
 prereqs()
 {
@@ -30,7 +31,7 @@ log_begin_msg "$DESCRIPTION"
 if [ -d "${LIP_HOOKS}" ]; then
   for hook in $(find "${LIP_HOOKS}" -name "*.hook.sh"); do
     log_begin_msg "Executing lip hook ${hook}"
-    /bin/sh "${hook}"
+    /bin/sh "${hook}" "$LIP_STICK"
     log_end_msg
   done
 else
