@@ -46,16 +46,6 @@ function install_nmtelekinese()
 	chmod +x "$IRD/scripts/casper-bottom/26mopsmops"
 }
 
-function install_libnsa()
-{
-        mkdir -p "$IRD/lip/libnsa"
-        cp "$CONTRIB_DIR/libnsa/libnsa.desktop" "$IRD/lip/libnsa"
-        cp "$CONTRIB_DIR/libnsa/libnsa.sh" "$IRD/lip/libnsa"
-        cp "$CONTRIB_DIR/libnsa/26libnsa" "$IRD/scripts/casper-bottom/"
-        chmod +x "$IRD/lip/libnsa/libnsa.sh"
-        chmod +x "$IRD/scripts/casper-bottom/26libnsa"
-}
-
 function add_no_bootloader_icon()
 {
 	mkdir -p "$IRD/lip/no-bootloader-icon"
@@ -75,7 +65,6 @@ function install_liphook()
 
 mkdir -p "$IRD/lip"
 install_nmtelekinese
-#install_libnsa
 add_no_bootloader_icon
 install_liphook
 
