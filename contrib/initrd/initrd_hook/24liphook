@@ -27,11 +27,15 @@ log_begin_msg "$DESCRIPTION"
 #cp /lip/no-bootloader-icon/ubiquity-kdeui-no-bootloader.desktop /root/usr/share/applications/kde4/
 
 #TODO: install ubiquity here?
-for hook in $(find "${LIP_HOOKS}" -name "*.hook.sh"); do
-  log_begin_msg "Executing lip hook ${hook}"
-  /bin/sh "${hook}"
-  log_end_msg
-done
+if [ -d "${LIP_HOOKS}" ]; then
+  for hook in $(find "${LIP_HOOKS}" -name "*.hook.sh"); do
+    log_begin_msg "Executing lip hook ${hook}"
+    /bin/sh "${hook}"
+    log_end_msg
+  done
+else
+  log_warning_msg "No lip hook directory avaiable in /cdrom"
+fi
 
 log_end_msg
 
