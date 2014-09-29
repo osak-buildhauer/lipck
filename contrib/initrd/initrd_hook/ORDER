@@ -30,21 +30,17 @@
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/22sslcert
 [ -e /conf/param.conf ] && . /conf/param.conf
-/scripts/casper-bottom/23etc_modules
-[ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/23networking
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/24liphook
 [ -e /conf/param.conf ] && . /conf/param.conf
-/scripts/casper-bottom/24preeseed
+/scripts/casper-bottom/24preseed
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/25adduser
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/25configure_init
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/26serialtty
-[ -e /conf/param.conf ] && . /conf/param.conf
-/scripts/casper-bottom/26libnsa
 [ -e /conf/param.conf ] && . /conf/param.conf
 /scripts/casper-bottom/26mopsmops
 [ -e /conf/param.conf ] && . /conf/param.conf
