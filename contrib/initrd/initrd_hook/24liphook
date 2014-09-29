@@ -2,6 +2,7 @@
 
 PREREQ=""
 DESCRIPTION="lip specific stuff"
+LIP_HOOKS="/cdrom/initrd_hooks/"
 
 prereqs()
 {
@@ -26,6 +27,11 @@ cp /lip/no-bootloader-icon/ubiquity-kdeui.desktop /root/usr/share/applications/k
 cp /lip/no-bootloader-icon/ubiquity-kdeui-no-bootloader.desktop /root/usr/share/applications/kde4/
 
 #TODO: install ubiquity here?
+for hook in $(find "${LIP_HOOKS}" -name "*.hook.sh"); do
+  log_begin_msg "Executing lip hook ${hook}"
+  /bin/sh "${hook}"
+  log_end_msg
+done
 
 log_end_msg
 
