@@ -4,6 +4,10 @@ CONFIG_FILE=$(CURDIR)/config/Makefile.conf
 include $(CONFIG_FILE_DEFAULTS)
 include $(CONFIG_FILE)
 
+#list of offically supported config options; they should have a default value in CONFIG_FILE_DEFAULTS
+CONFIGURABLE=PRIMARY_ARCH SECONDARY_ARCH WORKSPACE ISO_BASE_URL ISO_RELEASE ISO_VERSION ISO_FLAVOR \
+	IMAGE_GIT_URL IMAGE_GIT_BRANCH
+
 ifndef ARCH
   ARCH=$(PRIMARY_ARCH)
 endif
@@ -260,10 +264,8 @@ image : image_content
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
-	echo -n "" > $(CONFIG_FILE)
-	echo "PRIMARY_ARCH=$(PRIMARY_ARCH)" >> "$(CONFIG_FILE)"
-	echo "SECONDARY_ARCH=$(SECONDARY_ARCH)" >> "$(CONFIG_FILE)"
-	echo "WORKSPACE=$(WORKSPACE)" >> "$(CONFIG_FILE)"
+	echo "#see $(CONFIG_FILE_DEFAULTS) for default values." > "$(CONFIG_FILE)"
+	echo -e -n "$(foreach option,$(CONFIGURABLE),$(option)=$($(option))\n)" | tr -d "[:blank:]" >> "$(CONFIG_FILE)"
 
 config_clean:
 	$(RM) $(CONFIG_FILE)
