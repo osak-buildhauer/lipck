@@ -23,8 +23,8 @@ load_confmodule
 log_begin_msg "$DESCRIPTION"
 
 #copy desktop file for the no-bootloader-icon (required in 25adduser)
-cp /lip/no-bootloader-icon/ubiquity-kdeui.desktop /root/usr/share/applications/kde4/
-cp /lip/no-bootloader-icon/ubiquity-kdeui-no-bootloader.desktop /root/usr/share/applications/kde4/
+#cp /lip/no-bootloader-icon/ubiquity-kdeui.desktop /root/usr/share/applications/kde4/
+#cp /lip/no-bootloader-icon/ubiquity-kdeui-no-bootloader.desktop /root/usr/share/applications/kde4/
 
 #TODO: install ubiquity here?
 for hook in $(find "${LIP_HOOKS}" -name "*.hook.sh"); do
