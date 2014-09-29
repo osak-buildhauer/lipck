@@ -20,6 +20,7 @@
 
 SCRIPT_DIR="$1"
 IRD="$2"
+ROOTFS="$3"
 
 if [ ! -d "$SCRIPT_DIR" ]; then
 	echo "Expected lipck base path as first argument!"
@@ -29,6 +30,11 @@ fi
 if [ ! -d "$IRD" ]; then
         echo "Expected initrd root directory as second argument!"
         exit 2
+fi
+
+if [ ! -d "$ROOTFS" ]; then
+	echo "Expected rootfs directory as third argument!"
+	exit 3
 fi
 
 CONTRIB_DIR="$SCRIPT_DIR/contrib/initrd"
@@ -63,9 +69,17 @@ function install_liphook()
 	cp "$CONTRIB_DIR/initrd_hook/ORDER" "$IRD/scripts/casper-bottom/"
 }
 
+function replace_modules()
+{
+	local version=$(basename $(readlink -f "/mnt/data/lipck-work/x86_64/rootfs/vmlinuz") | cut -d'-' -f2-)
+	rm -rf "$IRD/lib/modules/*"
+	cp -a "$ROOTFS/lib/modules/$version" "$IRD/lib/modules"
+}
+
 mkdir -p "$IRD/lip"
 install_nmtelekinese
-add_no_bootloader_icon
+#add_no_bootloader_icon
 install_liphook
+replace_modules
 
 patch_all "$SCRIPT_DIR/patches/initrd" "$IRD"

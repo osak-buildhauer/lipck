@@ -196,8 +196,8 @@ initrd_clean:
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/initrd_remastered"
 
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
-$(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted
-	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)"
+$(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_finalized
+	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_remastered"
 
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
