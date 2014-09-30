@@ -297,7 +297,7 @@ help:
 	@echo "Workspace: $(WORKSPACE)"
 	@echo "You may specify the Architecture by setting ARCH="
 	@echo
-	@echo "=== How to run make ==="
+	@echo "=== How to run lipck ==="
 	@echo "0. Run make config as user e.g. \"\$$ make WORKSPACE=/media/drivewithspace config\"."
 	@echo "1. Optional: Run \"make image_skel_file\" to obtain an empty image file."
 	@echo "   You may specify the target file with IMAGE_FILE="
