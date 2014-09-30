@@ -1,3 +1,26 @@
+#This file is part of lipck - the "linux install party customization kit".
+#
+# Copyright (C) 2014 trilader, Anwarias, Christopher Spinrath
+#
+# lipck is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# lipck is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with lipck.  If not, see <http://www.gnu.org/licenses/>.
+
+$(info lipck Copyright (C) 2014 trilader, Anwarias, Christopher Spinrath)
+$(info This program comes with ABSOLUTELY NO WARRANTY;)
+$(info This is free software, and you are welcome to redistribute it)
+$(info under certain conditions; cf. the COPYING file for details.)
+$(info )
+
 CONFIG_FILE_DEFAULTS=$(CURDIR)/config/Makefile.conf.defaults
 CONFIG_FILE=$(CURDIR)/config/Makefile.conf
 
