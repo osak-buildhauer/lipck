@@ -83,7 +83,7 @@ function install_packages_from_file()
 {
 	FILENAME="$1"
 	APT_OPTIONS=$2
-	
+
 	if [ ! -e "$FILENAME" ]; then
 		echo "Error: package file $FILENAME does not exist!"
 		exit 3
@@ -94,15 +94,32 @@ function install_packages_from_file()
 	aptitude install -y $APT_OPTIONS $PKGS
 }
 
+function install_lang_packages()
+{
+	#the content of this function is extracted from UCK
+	MISSING_LANG_PKG="$(check-language-support -l de_DE)"
+        MISSING_LANG_PKG="$(check-language-support -l en_US) $MISSING_LANG_PKG" # check for missing packages for de_DE and en_US
+
+        if [ -n "$MISSING_LANG_PKG" ]; then
+                aptitude install $MISSING_LANG_PKG -y
+        fi
+
+        EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>")" # remove extra language packages
+
+        if [ -n "$EXTRA_LANG_PKG" ]; then
+                aptitude purge $EXTRA_LANG_PKG -y
+        fi
+}
+
 function install_packages()
 {
 	apt-get dist-upgrade --assume-yes --force-yes
 	apt-get install aptitude -y
 
 	#aptitude full-upgrade -y # make sure we have the newest versions
-	# Some daily images do not have a kernel ?!?
 	
-	#uncomment this if you remaster a daily build (fix kernel version!)
+	#Some daily images do not have a kernel;
+	#ensure that a valid kernel is installed
 	KERNEL_PKG=linux-signed-generic-lts-trusty
 	[ "$(uname -m)" == "x86_64" ] || KERNEL_PKG=linux-image-generic-lts-trusty
 	aptitude reinstall $KERNEL_PKG -y
@@ -111,19 +128,8 @@ function install_packages()
 	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages" ""
 	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages.without-recommends" "--without-recommends"
 	
-	MISSING_LANG_PKG="$(check-language-support -l de_DE)"
-	MISSING_LANG_PKG="$(check-language-support -l en_US) $MISSING_LANG_PKG" # check for missing packages for de_DE and en_US
-	
-	if [ -n "$MISSING_LANG_PKG" ]; then
-		aptitude install $MISSING_LANG_PKG -y
-	fi
-	
-	EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>")" # remove extra language packages
+	install_lang_packages
 
-	if [ -n "$EXTRA_LANG_PKG" ]; then
-		aptitude purge $EXTRA_LANG_PKG -y
-	fi
-	
 	install_debs "$CONTRIB_DIR/debs/"
 }
 
@@ -132,7 +138,7 @@ function finalize()
 	echo -n "Europe/Berlin" > /etc/timezone
 	
 	rm -rf /var/crash/*
-	#TODO: verify
+
 	if [ -z "$LIPCK_HAS_APT_CACHE" ]
 	then
 	  rm -rf /var/cache/apt/*
