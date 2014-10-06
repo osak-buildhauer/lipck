@@ -110,12 +110,12 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 	test ! -e "$(call archdir,$*)$(ROOTFS)/remaster/"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; \
 	then \
-		cp "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
+		cp -a --remove-destination "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
 	fi
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	echo "shift; exec \$$@" >> "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	chmod +x "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
-	cp /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
+	cp -a --remove-destination /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	mkdir -p "$(call archdir,$*)$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(call archdir,$*)$(ROOTFS)/remaster"
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
