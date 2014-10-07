@@ -10,13 +10,9 @@ endif
 
 #some tools and targets need alternative architecture names,
 #so lets infer them
-ALTARCH=$(ARCH)
-ifeq ($(ARCH),x86_64)
-  ALTARCH=amd64
-endif
-ifeq ($(ARCH),i686)
-  ALTARCH=i386
-endif
+define altarch =
+$(if $(subst x86_64,,$1),$(if $(subst i686,,$1),$1,i386),amd64)
+endef
 
 RSYNC=rsync -a
 
@@ -36,9 +32,12 @@ endef
 
 ISO_IMAGE_DEST=/iso
 ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
-ISO_NAME=$(ISO_FLAVOR)-$(ISO_VERSION)-desktop-$(ALTARCH).iso
 ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/release
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
+
+define getisoname =
+$(ISO_FLAVOR)-$(ISO_VERSION)-desktop-$(call altarch,$1).iso
+endef
 
 CASPER_SOURCE_DIR=$(ISO_CONTENT)/casper
 INITRD_SOURCE=$(CASPER_SOURCE_DIR)/initrd.lz
@@ -70,12 +69,12 @@ $(call gentargets,$(STATE_DIR)) : | $(WORKSPACE)/%
 iso_download : $(ARCH_DIR)$(ISO_IMAGE)
 $(call gentargets,$(ISO_IMAGE)) : | $(call archdir,%)
 	mkdir -p "$(call archdir,$*)$(ISO_IMAGE_DEST)"
-	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" -c "$(ISO_URL)/$(ISO_NAME)"
+	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(call getisoname,$*)" -c "$(ISO_URL)/$(call getisoname,$*)"
 	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" -c "$(ISO_URL)/SHA256SUMS"
-	grep "$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
+	grep "$(call getisoname,$*)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
 	$(RM) "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp"
 	cd "$(call archdir,$*)$(ISO_IMAGE_DEST)" && sha256sum -c SHA256SUMS
-	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE)"
+	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(call getisoname,$*)" "$(call archdir,$*)$(ISO_IMAGE)"
 
 iso_content : $(ARCH_DIR)$(STATE_DIR)/iso_extracted
 $(call gentargets,$(STATE_DIR)/iso_extracted) : $(call archdir,%)$(ISO_IMAGE) | $(call archdir,%)$(STATE_DIR)
@@ -269,7 +268,7 @@ config_clean:
 	$(RM) $(CONFIG_FILE)
 
 help:
-	@echo "Defaul Architecture: $(ARCH) ($(ALTARCH))"
+	@echo "Defaul Architecture: $(ARCH) ($(call altarch,$(ARCH)))"
 	@echo "Workspace: $(WORKSPACE)"
 	@echo "You may specify the Architecture by setting ARCH="
 	@echo
