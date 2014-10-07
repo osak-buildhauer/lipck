@@ -281,7 +281,7 @@ help:
 	@echo "   If you have mounted an image/partition (e.g. an empty image created in 1.) set IMAGE_DIR to the mount point,"
 	@echo "   (e.g. \"# make IMAGE_DIR=/your/mountpoint image\") to update it."
 	@echo
-	@echo "There is a list of all available phony targets is available under \"make listall\""
+	@echo "There is a list of all phony targets available under \"make listall\""
 
 listall:
 	@echo "Available targets: "
