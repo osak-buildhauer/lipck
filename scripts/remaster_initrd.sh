@@ -71,7 +71,7 @@ function install_liphook()
 
 function replace_modules()
 {
-	local version=$(basename $(readlink -f "/mnt/data/lipck-work/x86_64/rootfs/vmlinuz") | cut -d'-' -f2-)
+	local version=$(basename $(readlink -f "$ROOTFS/vmlinuz") | cut -d'-' -f2-)
 	rm -rf "$IRD/lib/modules/*"
 	cp -a "$ROOTFS/lib/modules/$version" "$IRD/lib/modules"
 }
