@@ -121,7 +121,18 @@ function copy_modprobe_d()
 	update-initramfs -u
 }
 
+function prevent_ubiquity_update()
+{
+	echo "ubiquity hold" | dpkg --set-selections
+}
+function allow_ubiquity_update()
+{
+	echo "ubiquity install" | dpkg --set-selections
+}
+
 divert_initctl
+
+prevent_ubiquity_update #required because of launchpad bug #1373033
 
 prepare_install
 copy_modprobe_d
@@ -135,6 +146,8 @@ patch_all "$SCRIPT_DIR/patches/" "/"
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
 #glib-compile-schemas /usr/share/glib-2.0/schemas
+
+allow_ubiquity_update #required because of launchpad bug #1373033
 
 revert_initctl
 finalize
