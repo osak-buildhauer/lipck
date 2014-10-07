@@ -36,13 +36,9 @@ endif
 
 #some tools and targets need alternative architecture names,
 #so lets infer them
-ALTARCH=$(ARCH)
-ifeq ($(ARCH),x86_64)
-  ALTARCH=amd64
-endif
-ifeq ($(ARCH),i686)
-  ALTARCH=i386
-endif
+define altarch =
+$(if $(subst x86_64,,$1),$(if $(subst i686,,$1),$1,i386),amd64)
+endef
 
 RSYNC=rsync -a
 
@@ -62,9 +58,12 @@ endef
 
 ISO_IMAGE_DEST=/iso
 ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
-ISO_NAME=$(ISO_FLAVOR)-$(ISO_VERSION)-desktop-$(ALTARCH).iso
 ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/release
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
+
+define getisoname =
+$(ISO_FLAVOR)-$(ISO_VERSION)-desktop-$(call altarch,$1).iso
+endef
 
 CASPER_SOURCE_DIR=$(ISO_CONTENT)/casper
 INITRD_SOURCE=$(CASPER_SOURCE_DIR)/initrd.lz
@@ -96,12 +95,12 @@ $(call gentargets,$(STATE_DIR)) : | $(WORKSPACE)/%
 iso_download : $(ARCH_DIR)$(ISO_IMAGE)
 $(call gentargets,$(ISO_IMAGE)) : | $(call archdir,%)
 	mkdir -p "$(call archdir,$*)$(ISO_IMAGE_DEST)"
-	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" -c "$(ISO_URL)/$(ISO_NAME)"
+	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(call getisoname,$*)" -c "$(ISO_URL)/$(call getisoname,$*)"
 	wget -O "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" -c "$(ISO_URL)/SHA256SUMS"
-	grep "$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
+	grep "$(call getisoname,$*)" "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp" > "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS"
 	$(RM) "$(call archdir,$*)$(ISO_IMAGE_DEST)/SHA256SUMS.temp"
 	cd "$(call archdir,$*)$(ISO_IMAGE_DEST)" && sha256sum -c SHA256SUMS
-	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(ISO_NAME)" "$(call archdir,$*)$(ISO_IMAGE)"
+	mv "$(call archdir,$*)$(ISO_IMAGE_DEST)/$(call getisoname,$*)" "$(call archdir,$*)$(ISO_IMAGE)"
 
 iso_content : $(ARCH_DIR)$(STATE_DIR)/iso_extracted
 $(call gentargets,$(STATE_DIR)/iso_extracted) : $(call archdir,%)$(ISO_IMAGE) | $(call archdir,%)$(STATE_DIR)
@@ -113,6 +112,10 @@ iso_clean:
 	$(RM) "$(ARCH_DIR)$(ISO_IMAGE)"
 	$(RM) -r "$(ARCH_DIR)$(ISO_IMAGE_DEST)"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/iso_extracted"
+
+iso_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) iso_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) iso_clean
 
 apt_cache $(APT_CACHE_DIR): |$(WORKSPACE)
 	mkdir -p "$(APT_CACHE_DIR)"
@@ -133,12 +136,12 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 	test ! -e "$(call archdir,$*)$(ROOTFS)/remaster/"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; \
 	then \
-		cp "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
+		cp -a --remove-destination "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
 	fi
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	echo "shift; exec \$$@" >> "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	chmod +x "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
-	cp /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
+	cp -a --remove-destination /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	mkdir -p "$(call archdir,$*)$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(call archdir,$*)$(ROOTFS)/remaster"
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
@@ -175,6 +178,10 @@ rootfs_clean:
 	$(RM) "$(ARCH_DIR)/filesystem.size"
 	$(RM) -r $(ARCH_DIR)$(LXC_DIR)
 
+rootfs_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) rootfs_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_clean
+
 rootfs_checksums : $(ARCH_DIR)$(CHECKSUMS)
 $(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	cd "$(call archdir,$*)$(ROOTFS)" && find . -type f -print0 | sort -z | xargs -0 md5sum > "$(call archdir,$*)$(CHECKSUMS)"
@@ -209,6 +216,10 @@ rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SE
 rootfs_common_clean:
 	$(RM) -r "$(COMMON_DIR)"
 
+rootfs_common_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) rootfs_common_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_common_clean
+
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
 	mkdir -p "$(call archdir,$*)$(INITRD)"
@@ -221,6 +232,10 @@ initrd_clean:
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/initrd_extracted"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/initrd_remastered"
 
+initrd_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) initrd_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) initrd_clean
+
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
 $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
@@ -229,6 +244,8 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma -z > "$(call archdir,$*)$(INITRD_TARGET)"
+
+clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean_both initrd_clean_both
 
 image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	test ! -e "$(IMAGE_DIR)/.git"
@@ -293,7 +310,7 @@ config_clean:
 	$(RM) $(CONFIG_FILE)
 
 help:
-	@echo "Defaul Architecture: $(ARCH) ($(ALTARCH))"
+	@echo "Defaul Architecture: $(ARCH) ($(call altarch,$(ARCH)))"
 	@echo "Workspace: $(WORKSPACE)"
 	@echo "You may specify the Architecture by setting ARCH="
 	@echo
@@ -305,17 +322,17 @@ help:
 	@echo "   If you have mounted an image/partition (e.g. an empty image created in 1.) set IMAGE_DIR to the mount point,"
 	@echo "   (e.g. \"# make IMAGE_DIR=/your/mountpoint image\") to update it."
 	@echo
-	@echo "There is a list of all available phony targets is available under \"make listall\""
+	@echo "There is a list of all phony targets available under \"make listall\""
 
 listall:
 	@echo "Available targets: "
 	@echo -e "$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),\n-$t)"
 
-ISO_PHONY=iso_download iso_content iso_clean
-ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
-INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
+ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean rootfs_clean_both rootfs_common_clean_both
+INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files
-COMMON_PHONY=help workspace config config_clean
+COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
