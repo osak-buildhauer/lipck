@@ -4,6 +4,9 @@ CONFIG_FILE=$(CURDIR)/config/Makefile.conf
 include $(CONFIG_FILE_DEFAULTS)
 include $(CONFIG_FILE)
 
+#read all offically config options from CONFIG_FILE_DEFAULTS
+CONFIGURABLE=$(shell cat "$(CONFIG_FILE_DEFAULTS)" | grep -v "^\#" | cut -s -d"=" -f1)
+
 ifndef ARCH
   ARCH=$(PRIMARY_ARCH)
 endif
@@ -106,12 +109,12 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 	test ! -e "$(call archdir,$*)$(ROOTFS)/remaster/"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" ]; \
 	then \
-		cp "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
+		cp -a --remove-destination "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak"; \
 	fi
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	echo "shift; exec \$$@" >> "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	chmod +x "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
-	cp /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
+	cp -a --remove-destination /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	mkdir -p "$(call archdir,$*)$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(call archdir,$*)$(ROOTFS)/remaster"
 	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
@@ -259,10 +262,8 @@ image : image_content
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
-	echo -n "" > $(CONFIG_FILE)
-	echo "PRIMARY_ARCH=$(PRIMARY_ARCH)" >> "$(CONFIG_FILE)"
-	echo "SECONDARY_ARCH=$(SECONDARY_ARCH)" >> "$(CONFIG_FILE)"
-	echo "WORKSPACE=$(WORKSPACE)" >> "$(CONFIG_FILE)"
+	echo "#see $(CONFIG_FILE_DEFAULTS) for default values." > "$(CONFIG_FILE)"
+	echo -e -n "$(foreach option,$(CONFIGURABLE),$(option)=$($(option))\n)" | tr -d "[:blank:]" >> "$(CONFIG_FILE)"
 
 config_clean:
 	$(RM) $(CONFIG_FILE)
@@ -272,7 +273,7 @@ help:
 	@echo "Workspace: $(WORKSPACE)"
 	@echo "You may specify the Architecture by setting ARCH="
 	@echo
-	@echo "=== How to run make ==="
+	@echo "=== How to run lipck ==="
 	@echo "0. Run make config as user e.g. \"\$$ make WORKSPACE=/media/drivewithspace config\"."
 	@echo "1. Optional: Run \"make image_skel_file\" to obtain an empty image file."
 	@echo "   You may specify the target file with IMAGE_FILE="
