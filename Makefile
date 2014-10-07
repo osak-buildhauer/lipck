@@ -90,6 +90,10 @@ iso_clean:
 	$(RM) -r "$(ARCH_DIR)$(ISO_IMAGE_DEST)"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/iso_extracted"
 
+iso_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) iso_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) iso_clean
+
 apt_cache $(APT_CACHE_DIR): |$(WORKSPACE)
 	mkdir -p "$(APT_CACHE_DIR)"
 
@@ -151,6 +155,10 @@ rootfs_clean:
 	$(RM) "$(ARCH_DIR)/filesystem.size"
 	$(RM) -r $(ARCH_DIR)$(LXC_DIR)
 
+rootfs_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) rootfs_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_clean
+
 rootfs_checksums : $(ARCH_DIR)$(CHECKSUMS)
 $(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	cd "$(call archdir,$*)$(ROOTFS)" && find . -type f -print0 | sort -z | xargs -0 md5sum > "$(call archdir,$*)$(CHECKSUMS)"
@@ -185,6 +193,10 @@ rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SE
 rootfs_common_clean:
 	$(RM) -r "$(COMMON_DIR)"
 
+rootfs_common_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) rootfs_common_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_common_clean
+
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
 	mkdir -p "$(call archdir,$*)$(INITRD)"
@@ -197,6 +209,10 @@ initrd_clean:
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/initrd_extracted"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/initrd_remastered"
 
+initrd_clean_both:
+	$(MAKE) ARCH=$(PRIMARY_ARCH) initrd_clean
+	$(MAKE) ARCH=$(SECONDARY_ARCH) initrd_clean
+
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
 $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_finalized
 	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
@@ -205,6 +221,8 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma -z > "$(call archdir,$*)$(INITRD_TARGET)"
+
+clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean_both initrd_clean_both
 
 image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	test ! -e "$(IMAGE_DIR)/.git"
@@ -287,11 +305,11 @@ listall:
 	@echo "Available targets: "
 	@echo -e "$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),\n-$t)"
 
-ISO_PHONY=iso_download iso_content iso_clean
-ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean
-INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean
+ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean rootfs_clean_both rootfs_common_clean_both
+INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files
-COMMON_PHONY=help workspace config config_clean
+COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
