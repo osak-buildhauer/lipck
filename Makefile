@@ -271,6 +271,7 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 		 "$(IMAGE_DIR)/"
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(ISO_CONTENT)/.disk/casper-uuid-generic" "$(IMAGE_DIR)/.disk/casper-uuid-generic-$(SECONDARY_ARCH)"
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI/BOOT/BOOTx64.EFI" "$(IMAGE_DIR)/efi/boot/"
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/EFI/BOOT/grubx64.efi" "$(IMAGE_DIR)/efi/boot/"
 	mkdir -p "$(IMAGE_DIR)/casper"
 	$(RSYNC) --progress "$(COMMON_DIR)/lip-common.squashfs" \
 		 "$(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs" \

@@ -2,5 +2,5 @@ deb http://ftp.halifax.rwth-aachen.de/ubuntu/ trusty main restricted universe mu
 deb http://security.ubuntu.com/ubuntu/ trusty-security main restricted universe multiverse
 deb http://ftp.halifax.rwth-aachen.de/ubuntu/ trusty-updates main restricted universe multiverse
 
-#deb http://archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
-#deb http://archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe multiverse
+#deb http://de.archive.ubuntu.com/ubuntu/ trusty main restricted universe multiverse
+#deb http://de.archive.ubuntu.com/ubuntu/ trusty-updates main restricted universe multiverse

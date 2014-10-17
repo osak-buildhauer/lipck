@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with lipck.  If not, see <http://www.gnu.org/licenses/>.
 
+set -e
+
 SCRIPT_DIR="$1"
 ISO_REMASTER_DIR="$2"
 
