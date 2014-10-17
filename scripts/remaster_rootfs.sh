@@ -46,6 +46,13 @@ if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
 	source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
 
+if [ -e "$SCRIPT_DIR/scripts/uck_functions.sh" ]; then
+        source "$SCRIPT_DIR/scripts/uck_functions.sh"
+else
+	echo "Error: $SCRIPT_DIR/scripts/uck_functions.sh is missing."
+	exit 1
+fi
+
 if [ ! -d "$SCRIPT_DIR" ]; then
 	echo "Error: Missing remaster directory/files. Abort."
 	exit 2
@@ -94,23 +101,6 @@ function install_packages_from_file()
 	PKGS=$(grep -v "^#" "$FILENAME" | tr '\n' ' ')
 
 	aptitude install -y $APT_OPTIONS $PKGS
-}
-
-function install_lang_packages()
-{
-	#the content of this function is extracted from UCK
-	MISSING_LANG_PKG="$(check-language-support -l de_DE)"
-        MISSING_LANG_PKG="$(check-language-support -l en_US) $MISSING_LANG_PKG" # check for missing packages for de_DE and en_US
-
-        if [ -n "$MISSING_LANG_PKG" ]; then
-                aptitude install $MISSING_LANG_PKG -y
-        fi
-
-        EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>")" # remove extra language packages
-
-        if [ -n "$EXTRA_LANG_PKG" ]; then
-                aptitude purge $EXTRA_LANG_PKG -y
-        fi
 }
 
 function install_packages()
