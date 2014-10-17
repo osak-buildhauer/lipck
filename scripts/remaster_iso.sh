@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 SCRIPT_DIR="$1"
 ISO_REMASTER_DIR="$2"
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 

@@ -18,6 +18,8 @@
 # along with UCK.  If not, see <http://www.gnu.org/licenses/>.                    #
 ###################################################################################
 
+set -e
+
 SCRIPT_DIR="$1"
 IRD="$2"
 ROOTFS="$3"
