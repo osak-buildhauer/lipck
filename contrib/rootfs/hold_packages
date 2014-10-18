@@ -1,0 +1,5 @@
+#List of packages that should not be upgraded or deleted
+#during the remaster process.
+
+#required because of launchpad bug #1373033
+ubiquity
