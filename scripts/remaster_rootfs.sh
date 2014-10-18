@@ -70,17 +70,22 @@ function prepare_install()
 	apt-get update
 }
 
-function install_packages_from_file()
+function get_packages_from_file()
 {
 	FILENAME="$1"
-	APT_OPTIONS=$2
 
 	if [ ! -e "$FILENAME" ]; then
 		echo "Error: package file $FILENAME does not exist!"
 		exit 3
 	fi
 
-	PKGS=$(grep -v "^#" "$FILENAME" | tr '\n' ' ')
+	echo "$(grep -v "^#" "$FILENAME" | tr '\n' ' ')"
+}
+
+function install_packages_from_file()
+{
+	APT_OPTIONS=$2
+	PKGS=$(get_packages_from_file "$1")
 
 	aptitude install -y $APT_OPTIONS $PKGS
 }
@@ -131,18 +136,25 @@ function copy_modprobe_d()
 	update-initramfs -u
 }
 
-function prevent_ubiquity_update()
+function hold_packages()
 {
-	echo "ubiquity hold" | dpkg --set-selections
+	for PKG in $@; do
+		echo "$(echo "$PKG" | tr "[:blank:]") hold" | dpkg --set-selections
+	done
 }
-function allow_ubiquity_update()
+
+function unhold_packages()
 {
-	echo "ubiquity install" | dpkg --set-selections
+	for PKG in $@; do
+		echo "$(echo "$PKG" | tr -d "[:blank:]") install" | dpkg --set-selections
+	done
 }
 
 divert_initctl
 
-prevent_ubiquity_update #required because of launchpad bug #1373033
+PKGS_TO_HOLD=$(get_packages_from_file "$CONTRIB_DIR/hold_packages")
+
+hold_packages $PKGS_TO_HOLD
 
 prepare_install
 copy_modprobe_d
@@ -157,7 +169,7 @@ patch_all "$SCRIPT_DIR/patches/" "/"
 #echo "compiling glib2 schemas..."
 #glib-compile-schemas /usr/share/glib-2.0/schemas
 
-allow_ubiquity_update #required because of launchpad bug #1373033
+unhold_packages $PKGS_TO_HOLD
 
 revert_initctl
 finalize
