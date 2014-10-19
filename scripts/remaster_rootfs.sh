@@ -139,7 +139,7 @@ function copy_modprobe_d()
 function hold_packages()
 {
 	for PKG in $@; do
-		echo "$(echo "$PKG" | tr "[:blank:]") hold" | dpkg --set-selections
+		echo "$(echo "$PKG" | tr -d "[:blank:]") hold" | dpkg --set-selections
 	done
 }
 
