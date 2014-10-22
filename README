@@ -1,0 +1,22 @@
+This is lipck - the "linux install party customization kit".
+
+This package of scripts is intended for remastering Ubuntu based 
+distributions.
+This collection of scripts was created by members of the
+Open-Source working group of the Fachschaft 1/1 Mathematik, Physik,
+Informatik of the RWTH Aachen University for remastering images for their
+Linux Install Parties.
+Existing solutions such as UCK could not do some things we wanted to do like 
+updating the initramfs kernel, saving space by deduplicating files between
+multiple architectures (e.g. x86,x64). We release this collection of scripts
+in hope that they will be useful for someone else as well.
+
+This project is licensed under the terms of the GPLv3 license which you can
+find in the COPYING file.
+
+This repository also contains a binary template for USB installation media
+that contains a preinstalled copy of GNU GRUB2. GRUB2 is licensed under
+the terms of the GPLv3.
+You can find the GRUB2 souces under <https://www.gnu.org/software/grub/>.
+
+
