@@ -1,15 +1,20 @@
 #! /bin/bash
 set -e
 
-echo "mkdebarchive.sh (C) 2012-2014 Mmoebius/ALUG, trilader/ALUG License: GPLv3 GNU Public License"
-DIST_CODENAME="trusty"
-DIST_VERSION="14.04"
+echo "mkdebarchive.sh (C) 2012-2014 Mmoebius/ALUG, trilader/ALUG; 2014 Christopher Spinrath/OSAK"
+echo "License: GPLv3 GNU Public License"
+echo "Usage: mkdebarchive.sh [dist-codename [dist-version [archives-dir]]]"
+
+DIST_CODENAME="${1:-"trusty"}"
+DIST_VERSION="${2:-"14.04"}"
 BUILD_DATE="$(LC_ALL=C date -u)"
 echo "Running for Ubuntu $DIST_VERSION ($DIST_CODENAME)..."
 
-echo "Prerequisite: Alle .deb-Packete liegen in ./archives/"
-test -d ./archives || { echo "FAIL: no './archives'"; exit 2; }
-cd archives
+ARCHIVES_DIR="${3:-"./archives"}"
+
+echo "Prerequisite: Alle .deb-Packete liegen in $ARCHIVES_DIR"
+test -d "$ARCHIVES_DIR" || { echo "FAIL: no '$ARCHIVES_DIR'"; exit 2; }
+cd "$ARCHIVES_DIR"
 
 echo
 echo "Scanne nach Packages"
