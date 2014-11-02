@@ -1,0 +1,15 @@
+- Build the offline repository automatically
+  WiP: offline_repo branch
+
+- aptitude triggers the "set -e" in remaster_rootfs
+  Known workaround: comment the "set -e"
+
+- Solve the lxc.init problem (no lxc.init avaiable in Ubuntu rootfs
+  but it is required to install stuff inside the rootfs...)
+  Implemented workaround: create on-the-fly a bash script, name it
+  lxc.init.static and hope the best.
+
+- Rootless remastering. Requirements:
+  - user namespaces
+  - loop devices inside a user container
+  - device mapper inside a user container
