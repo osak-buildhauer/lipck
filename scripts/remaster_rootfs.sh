@@ -40,24 +40,6 @@ if [ ! -d "$SCRIPT_DIR" ]; then
 	exit 2
 fi
 
-function divert_initctl()
-{
-	dpkg-divert --local --rename --add /sbin/initctl
-	ln -s /bin/true /sbin/initctl
-	# Fix sysvinit legacy invoke-rc.d issue with nonexisting scripts
-	dpkg-divert --local --rename --add /usr/sbin/invoke-rc.d
-	ln -s /bin/true /usr/sbin/invoke-rc.d
-}
-
-function revert_initctl()
-{
-	rm /sbin/initctl
-	dpkg-divert --local --rename --remove /sbin/initctl
-	# Fix sysvinit legacy invoke-rc.d issue with nonexisting scripts
-	rm /usr/sbin/invoke-rc.d
-	dpkg-divert --local --rename --remove /usr/sbin/invoke-rc.d
-}
-
 function prepare_install()
 {
 	if [ -e "$CONTRIB_DIR/lip_sources.list" ]; then
@@ -68,18 +50,6 @@ function prepare_install()
 	#add-apt-repository -y ppa:texlive-backports/ppa
 
 	apt-get update
-}
-
-function get_packages_from_file()
-{
-	FILENAME="$1"
-
-	if [ ! -e "$FILENAME" ]; then
-		echo "Error: package file $FILENAME does not exist!"
-		exit 3
-	fi
-
-	echo "$(grep -v "^#" "$FILENAME" | tr '\n' ' ')"
 }
 
 function install_packages_from_file()
