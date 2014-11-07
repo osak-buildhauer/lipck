@@ -153,7 +153,8 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_prepared"
 
 rootfs_remaster : $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered
-$(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR)/rootfs_prepared | $(APT_CACHE_DIR)
+$(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
+	$(MAKE) ARCH=$* rootfs_prepare
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$*" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
@@ -161,14 +162,16 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
 	-s lxc.mount.entry="none /run tmpfs defaults 0 0" \
 	-- /bin/bash -l /remaster/remaster.gen.sh
+	$(MAKE) ARCH=$* rootfs_finalized
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
 rootfs_finalize : $(ARCH_DIR)$(STATE_DIR)/rootfs_finalized
-$(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)/rootfs_remastered
+$(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)/rootfs_prepared
 	$(RM) "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
 	$(RM) "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak" ]; then mv "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"; fi
 	$(RM) -r "$(call archdir,$*)$(ROOTFS)/remaster"
+	$(RM) "$(call archdir,$*)$(STATE_DIR)/rootfs_prepared"
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_finalized"
 
 rootfs_clean:
@@ -185,7 +188,7 @@ rootfs_clean_both:
 	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_clean
 
 rootfs_checksums : $(ARCH_DIR)$(CHECKSUMS)
-$(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_finalized
+$(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_remastered
 	cd "$(call archdir,$*)$(ROOTFS)" && find . -type f -print0 | sort -z | xargs -0 md5sum > "$(call archdir,$*)$(CHECKSUMS)"
 
 rootfs_fssize: $(ARCH_DIR)/filesystem.size
@@ -235,7 +238,7 @@ initrd_clean_both:
 	$(MAKE) ARCH=$(SECONDARY_ARCH) initrd_clean
 
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
-$(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_finalized
+$(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_remastered
 	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_remastered"
 
