@@ -146,10 +146,11 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 	cp -a --remove-destination /etc/resolv.conf "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	mkdir -p "$(call archdir,$*)$(ROOTFS)/remaster"
 	cp -Lr "$(CURDIR)"/config/copy_to_rootfs_remaster_dir/* "$(call archdir,$*)$(ROOTFS)/remaster"
-	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
-	echo "export PATH; export TERM=$(TERM); export LIPCK_HAS_APT_CACHE=1" >> "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
-	echo "source /remaster/scripts/remaster_rootfs.sh" >> "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
-	chmod +x "$(call archdir,$*)$(ROOTFS)/remaster/remaster.gen.sh"
+	echo "#!/bin/bash" > "$(call archdir,$*)$(ROOTFS)/remaster/remaster.proxy.sh"
+	echo "export PATH; export TERM=$(TERM); export LIPCK_HAS_APT_CACHE=1" >> "$(call archdir,$*)$(ROOTFS)/remaster/remaster.proxy.sh"
+	echo "test -n \"\$$1\" || exit 41" >> "$(call archdir,$*)$(ROOTFS)/remaster/remaster.proxy.sh"
+	echo "exec \$$@" >> "$(call archdir,$*)$(ROOTFS)/remaster/remaster.proxy.sh"
+	chmod +x "$(call archdir,$*)$(ROOTFS)/remaster/remaster.proxy.sh"
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_prepared"
 
 rootfs_remaster : $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered
@@ -161,7 +162,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$*)$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
 	-s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
 	-s lxc.mount.entry="none /run tmpfs defaults 0 0" \
-	-- /bin/bash -l /remaster/remaster.gen.sh
+	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
 	$(MAKE) ARCH=$* rootfs_finalized
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
