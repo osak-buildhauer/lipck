@@ -77,6 +77,8 @@ STATE_DIR=/state
 LXC_DIR=/lxc_container
 CHECKSUMS=/rootfs.md5sums
 
+REPO_ARCHIVE_DIR=$(IMAGE_DIR)/archives
+REPO_DIST_DIR=$(REPO_ARCHIVE_DIR)/dists/$(ISO_RELEASE)/lip
 
 default: help
 	@exit 0
@@ -311,6 +313,11 @@ $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
 	echo "set lip_extra_info=\"$(IMAGE_EXTRA_INFO)\"" >> $(IMAGE_DIR)/grub/lipinfo.cfg
 
 image : image_content
+
+repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
+$(REPO_DIST_DIR)/binary-amd64/Packages.bz2 $(REPO_DIST_DIR)/binary-i386/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
+	cd "$(REPO_ARCHIVE_DIR)" \
+	&& cat Packages.noarch Packages.$* | bzip2 -c9 > $(REPO_DIST_DIR)/binary-$*/Packages.bz2
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
