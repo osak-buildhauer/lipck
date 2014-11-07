@@ -166,6 +166,22 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	$(MAKE) ARCH=$* rootfs_finalized
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
+rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
+	$(MAKE) ARCH=$(ARCH) rootfs_prepare
+	mkdir -p "$(call archdir,$(ARCH))$(LXC_DIR)"
+	@echo
+	@echo "==> LIPCK: Entering container... (exit with CTRL+D but _NOT_ with  CTRL+C!)"
+	lxc-execute --name "lipck_remaster_$(ARCH)" -P "$(call archdir,$(ARCH))$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
+        -s lxc.arch="$(ARCH)" -s lxc.rootfs="$(call archdir,$(ARCH))$(ROOTFS)" \
+        -s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$(ARCH))$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
+        -s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none /run tmpfs defaults 0 0" \
+        -- /bin/bash -l /remaster/remaster.proxy.sh /bin/bash
+	@echo
+	@echo "==> LIPCK: Leaving container and cleaning up..."
+	@echo
+	$(MAKE) ARCH=$(ARCH) rootfs_finalized
+
 rootfs_finalize : $(ARCH_DIR)$(STATE_DIR)/rootfs_finalized
 $(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)/rootfs_prepared
 	$(RM) "$(call archdir,$*)$(ROOTFS)/usr/sbin/init.lxc"
