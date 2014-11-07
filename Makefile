@@ -216,10 +216,6 @@ rootfs_squash: $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SE
 rootfs_common_clean:
 	$(RM) -r "$(COMMON_DIR)"
 
-rootfs_common_clean_both:
-	$(MAKE) ARCH=$(PRIMARY_ARCH) rootfs_common_clean
-	$(MAKE) ARCH=$(SECONDARY_ARCH) rootfs_common_clean
-
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
 	mkdir -p "$(call archdir,$*)$(INITRD)"
@@ -340,7 +336,7 @@ listall:
 	@echo -e "$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),\n-$t)"
 
 ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
-ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean rootfs_clean_both rootfs_common_clean_both
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean rootfs_clean_both
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo
