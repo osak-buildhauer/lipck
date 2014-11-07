@@ -317,7 +317,11 @@ image : image_content
 repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
 $(REPO_DIST_DIR)/binary-amd64/Packages.bz2 $(REPO_DIST_DIR)/binary-i386/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
 	cd "$(REPO_ARCHIVE_DIR)" \
-	&& cat Packages.noarch Packages.$* | bzip2 -c9 > $(REPO_DIST_DIR)/binary-$*/Packages.bz2
+	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
+
+repo_clean:
+	$(RM) -r "$(REPO_DIST_DIR)"
+	$(RM) -r "$(REPO_ARCHIVE_DIR)"
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
@@ -351,6 +355,7 @@ ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize root
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files
+REPO_PHONY=repo_package_info repo_clean
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
-.PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY)
+.PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
