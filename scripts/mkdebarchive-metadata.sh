@@ -2,7 +2,8 @@
 set -e
 
 #Note: this script is a subset of mkdebarchive.sh. It generates only the metadata and assumes
-#that the package files as well as the corect dirctory structure exist.
+#that the package files as well as the correct dirctory structure exist.
+#The original script may be found in ../legacy_scripts .
 
 echo "mkdebarchive.sh (C) 2012-2014 Mmoebius/ALUG, trilader/ALUG; 2014 Christopher Spinrath/OSAK"
 echo "License: GPLv3 GNU Public License"
