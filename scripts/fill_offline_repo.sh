@@ -20,9 +20,15 @@
 
 set -e
 
-DESTINATION="${1:-"/cdrom"}"
+ARCH="$1"
+DESTINATION="${2:-"/cdrom"}"
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
+
+test -n "$ARCH"  || { echo "$(basename $0): fatal error: no architecture specified."; exit 1; }
+
+echo
+echo "==> Fetching packages for offline repository for $ARCH"
 
 #source common functions (e.g. patch_all)
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
@@ -59,4 +65,15 @@ revert_initctl
 echo "updating package lists..."
 apt-get update
 echo "done."
+
+cd "$PKG_DESTINATION"
+echo
+echo "Scanning packages..."
+
+#TODO: "noarch" is created multiple times (once per architecture) and may be changed
+#by another call of this script independently of the .$ARCH file! This may cause
+#side effects.
+dpkg-scanpackages -a noarch . > Packages.noarch
+dpkg-scanpackages -a $ARCH  . > Packages.$ARCH
+
 #end.
