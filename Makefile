@@ -163,7 +163,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
 	-s lxc.mount.entry="none /run tmpfs defaults 0 0" \
 	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
-	$(MAKE) ARCH=$* rootfs_finalized
+	$(MAKE) ARCH=$* rootfs_finalize
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
 rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
@@ -180,7 +180,7 @@ rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CA
 	@echo
 	@echo "==> LIPCK: Leaving container and cleaning up..."
 	@echo
-	$(MAKE) ARCH=$(ARCH) rootfs_finalized
+	$(MAKE) ARCH=$(ARCH) rootfs_finalize
 
 rootfs_finalize : $(ARCH_DIR)$(STATE_DIR)/rootfs_finalized
 $(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)/rootfs_prepared
@@ -377,7 +377,7 @@ listall:
 	@echo -e "$(foreach t,$(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY),\n-$t)"
 
 ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
-ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_clean rootfs_common_clean rootfs_clean_both
+ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_console rootfs_clean rootfs_common_clean rootfs_clean_both
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo_package_info repo_metadata repo_clean
