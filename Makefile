@@ -40,10 +40,18 @@ define altarch =
 $(if $(subst x86_64,,$1),$(if $(subst i686,,$1),$1,i386),amd64)
 endef
 
+#inverse function of altarch; required by targets containing
+#the altarch string to depend on architecture specific stuff
+#Since all unknown names are mapped to itself this function
+#may be used to convert any name to the normal architecture name.
+define to_arch =
+$(if $(subst amd64,,$1),$(if $(subst i386,,$1),$1,i686),x86_64)
+endef
+
 RSYNC=rsync -a
 
 define archdir =
-$(WORKSPACE)/$1
+$(WORKSPACE)/$(call to_arch,$1)
 endef
 
 ARCH_DIR=$(call archdir,$(ARCH))
