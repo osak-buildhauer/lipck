@@ -338,8 +338,22 @@ $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
 
 image : image_content
 
+repo_packages : $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(ARCH))
+$(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(SECONDARY_ARCH)) : $(REPO_ARCHIVE_DIR)/Packages.% : $(call archdir,$*)$(STATE_DIR)/rootfs_remastered | $(IMAGE_DIR)
+	$(MAKE) ARCH=$(call to_arch,$*) rootfs_prepare
+	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
+	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
+        -s lxc.arch="$(call to_arch,$*)" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
+        -s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/var/cache/apt/ tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none /run tmpfs defaults 0 0" \
+	-s lxc.mount.entry="$(IMAGE_DIR) $(call archdir,$*)$(ROOTFS)/cdrom none defaults,bind 0 0" \
+        -- /bin/bash -l /remaster/remaster.proxy.sh \
+	/remaster/scripts/fill_offline_repo.sh "$*" "/cdrom"
+	$(MAKE) ARCH=$(call to_arch,$*) rootfs_finalize
+
 repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
-$(REPO_DIST_DIR)/binary-amd64/Packages.bz2 $(REPO_DIST_DIR)/binary-i386/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
+$(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
 	cd "$(REPO_ARCHIVE_DIR)" \
 	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
@@ -356,6 +370,8 @@ $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_A
 repo_clean:
 	$(RM) -r "$(REPO_DIST_DIR)"
 	$(RM) -r "$(REPO_ARCHIVE_DIR)"
+
+repo: repo_packages repo_package_info repo_metadata
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
@@ -388,7 +404,7 @@ ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_console rootfs_clean rootfs_common_clean rootfs_clean_both
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
-REPO_PHONY=repo_package_info repo_metadata repo_clean
+REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
 IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
