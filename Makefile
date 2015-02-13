@@ -70,8 +70,12 @@ ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
 ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
+ifndef ISO_PREFIX
+  ISO_PREFIX=$(ISO_FLAVOR)-$(ISO_VERSION)-
+endif
+
 define getisoname =
-$(ISO_FLAVOR)-$(ISO_VERSION)-desktop-$(call altarch,$1).iso
+$(ISO_PREFIX)desktop-$(call altarch,$1).iso
 endef
 
 CASPER_SOURCE_DIR=$(ISO_CONTENT)/casper
