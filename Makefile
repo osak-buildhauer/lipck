@@ -173,8 +173,8 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$*" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
 	-s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$*)$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
-	-s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
-	-s lxc.mount.entry="none /run tmpfs defaults 0 0" \
+	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/tmp tmpfs defaults 0 0" \
+	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/run tmpfs defaults 0 0" \
 	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
 	$(MAKE) ARCH=$* rootfs_finalize
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
