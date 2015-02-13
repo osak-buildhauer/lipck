@@ -187,8 +187,8 @@ rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CA
 	lxc-execute --name "lipck_remaster_$(ARCH)" -P "$(call archdir,$(ARCH))$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
         -s lxc.arch="$(ARCH)" -s lxc.rootfs="$(call archdir,$(ARCH))$(ROOTFS)" \
         -s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$(ARCH))$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
-        -s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
-        -s lxc.mount.entry="none /run tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/tmp tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/run tmpfs defaults 0 0" \
         -- /bin/bash -l /remaster/remaster.proxy.sh /bin/bash
 	@echo
 	@echo "==> LIPCK: Leaving container and cleaning up..."
@@ -350,8 +350,8 @@ $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
         -s lxc.arch="$(call to_arch,$*)" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
         -s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/var/cache/apt/ tmpfs defaults 0 0" \
-        -s lxc.mount.entry="none /tmp tmpfs defaults 0 0" \
-        -s lxc.mount.entry="none /run tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/tmp tmpfs defaults 0 0" \
+        -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/run tmpfs defaults 0 0" \
 	-s lxc.mount.entry="$(IMAGE_DIR) $(call archdir,$*)$(ROOTFS)/cdrom none defaults,bind 0 0" \
         -- /bin/bash -l /remaster/remaster.proxy.sh \
 	/remaster/scripts/fill_offline_repo.sh "$*" "/cdrom"
