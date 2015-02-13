@@ -22,6 +22,7 @@ SECONDARY_ARCH=i686
 #Image sources
 ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu/releases
 ISO_RELEASE=trusty
+ISO_CHANNEL=release
 ISO_VERSION=14.04.1
 ISO_FLAVOR=kubuntu
 

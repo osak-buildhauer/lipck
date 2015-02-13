@@ -67,7 +67,7 @@ endef
 
 ISO_IMAGE_DEST=/iso
 ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
-ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/release
+ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
 define getisoname =
