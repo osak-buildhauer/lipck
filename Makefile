@@ -276,7 +276,7 @@ initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma $(LZMA_FLAGS) -z > "$(call archdir,$*)$(INITRD_TARGET)"
 
-clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean_both initrd_clean_both
+clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both
 
 image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	test ! -e "$(IMAGE_DIR)/.git"
