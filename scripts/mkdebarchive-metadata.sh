@@ -9,7 +9,7 @@ echo "mkdebarchive.sh (C) 2012-2014 Mmoebius/ALUG, trilader/ALUG; 2014 Christoph
 echo "License: GPLv3 GNU Public License"
 echo "Usage: mkdebarchive-metadata.sh dist-codename dist-version archives-dir architecture_list..."
 
-test $# -ge 4 || { echo "Expecting at least 4 arguments!"; exit 1 }
+test $# -ge 4 || ( echo "Expecting at least 4 arguments!" && exit 1 )
 
 DIST_CODENAME="$1"
 DIST_VERSION="$2"
