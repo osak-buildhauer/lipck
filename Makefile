@@ -346,6 +346,7 @@ image : image_content
 repo_packages : $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(ARCH))
 $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(SECONDARY_ARCH)) : $(REPO_ARCHIVE_DIR)/Packages.% : $(call archdir,$*)$(STATE_DIR)/rootfs_remastered | $(IMAGE_DIR)
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_prepare
+	mkdir "$(call archdir,$*)$(ROOTFS)/cdrom"
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
         -s lxc.arch="$(call to_arch,$*)" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
@@ -355,11 +356,13 @@ $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)
 	-s lxc.mount.entry="$(IMAGE_DIR) $(call archdir,$*)$(ROOTFS)/cdrom none defaults,bind 0 0" \
         -- /bin/bash -l /remaster/remaster.proxy.sh \
 	/remaster/scripts/fill_offline_repo.sh "$*" "/cdrom"
+	rmdir "$(call archdir,$*)$(ROOTFS)/cdrom"
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_finalize
 
 repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
 $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
+	mkdir -p "$(REPO_DIST_DIR)/binary-$*/"
 	cd "$(REPO_ARCHIVE_DIR)" \
 	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
 
