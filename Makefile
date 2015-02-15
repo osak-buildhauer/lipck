@@ -70,7 +70,9 @@ ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
 ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
-ifndef ISO_PREFIX
+ifneq (,$(findstring release-prefix,$(ISO_PATTERN_FLAGS)))
+  ISO_PREFIX=$(ISO_RELEASE)-
+else
   ISO_PREFIX=$(ISO_FLAVOR)-$(ISO_VERSION)-
 endif
 
