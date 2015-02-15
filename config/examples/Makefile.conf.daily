@@ -1,0 +1,12 @@
+WORKSPACE=/workspace
+PRIMARY_ARCH=x86_64
+SECONDARY_ARCH=i686
+ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu
+ISO_RELEASE=trusty
+ISO_CHANNEL=daily-live/20150203.1
+ISO_VERSION=14.04.2
+ISO_FLAVOR=kubuntu
+ISO_PATTERN_FLAGS=release-prefix
+IMAGE_GIT_URL=https://www.fsmpi.rwth-aachen.de/git/lipstick
+IMAGE_GIT_BRANCH=ws14
+IMAGE_EXTRA_INFO=-test
