@@ -213,6 +213,7 @@ rootfs_clean:
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_remastered"
 	$(RM) "$(ARCH_DIR)$(STATE_DIR)/rootfs_finalized"
 	$(RM) "$(ARCH_DIR)/filesystem.size"
+	$(RM) "$(ARCH_DIR)/$(CHECKSUMS)"
 	$(RM) -r $(ARCH_DIR)$(LXC_DIR)
 
 rootfs_clean_both:
