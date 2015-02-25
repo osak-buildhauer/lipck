@@ -57,25 +57,25 @@ function install_packages_from_file()
 	APT_OPTIONS=$2
 	PKGS=$(get_packages_from_file "$1")
 
-	aptitude install -y $APT_OPTIONS $PKGS
+	apt-get -y $APT_OPTIONS install $PKGS
 }
 
 function install_packages()
 {
 	apt-get dist-upgrade --assume-yes --force-yes
-	apt-get install aptitude -y
+	#apt-get install aptitude -y
 
-	#aptitude full-upgrade -y # make sure we have the newest versions
+	#apt-get dist-upgrade -y # make sure we have the newest versions
 	
 	#Some daily images do not have a kernel;
 	#ensure that a valid kernel is installed
 	KERNEL_PKG=linux-signed-generic-lts-trusty
 	[ "$(uname -m)" == "x86_64" ] || KERNEL_PKG=linux-image-generic-lts-trusty
-	aptitude reinstall $KERNEL_PKG -y
-	apt-cache depends $KERNEL_PKG | tail -n+2 | awk '{print $NF}' | xargs aptitude reinstall -y
+	apt-get --reinstall -y install $KERNEL_PKG
+	apt-cache depends $KERNEL_PKG | tail -n+2 | awk '{print $NF}' | xargs apt-get --reinstall -y install
 
 	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages" ""
-	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages.without-recommends" "--without-recommends"
+	install_packages_from_file "$CONTRIB_DIR/pre_installed_packages.without-recommends" "--no-install-recommends"
 	
 	install_lang_packages
 
