@@ -60,10 +60,18 @@ function install_debs()
 function divert_initctl()
 {
         dpkg-divert --local --rename --add /sbin/initctl
-        ln -s /bin/true /sbin/initctl || ( echo "LIPCK: Failed to divert initcl!" && revert_initctl && exit 1 )
+        if ! ln -s /bin/true /sbin/initctl; then
+		echo "LIPCK: Failed to divert initctl!"
+		revert_initctl
+		exit 1
+	fi
         # Fix sysvinit legacy invoke-rc.d issue with nonexisting scripts
         dpkg-divert --local --rename --add /usr/sbin/invoke-rc.d
-        ln -s /bin/true /usr/sbin/invoke-rc.d
+        if ! ln -s /bin/true /usr/sbin/invoke-rc.d; then
+		echo "LIPCK: Failed to divert invoke-rc.d!"
+		revert_initctl
+		exit 1
+	fi
 }
 
 function revert_initctl()
