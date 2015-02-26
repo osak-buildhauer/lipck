@@ -332,7 +332,7 @@ image_skel_file: | $(WORKSPACE)
 	xz -d --keep --stdout "$(CURDIR)/contrib/image/multiboot.skel.img.xz" > "$(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
 	@echo
 	@echo "Image skeleton is ready: $(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
-	@echo "You may want to mount appropriately (e.g. with kpartx) and execute \"make IMAGE_DIR=/your/mountpoint image\""
+	@echo "You may want to mount appropriately (e.g. with kpartx) to $(IMAGE_DIR) and execute \"make image\""
 
 image_grub_lipinfo : $(IMAGE_DIR)/grub/lipinfo.cfg
 $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
