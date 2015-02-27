@@ -23,7 +23,7 @@ screen
 tofrodos
 efibootmgr
 gdisk
-linux-headers
+linux-headers-generic
 moreutils
 network-manager-vpnc
 vim
