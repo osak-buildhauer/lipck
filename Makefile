@@ -59,7 +59,6 @@ ARCH_DIR=$(call archdir,$(ARCH))
 PRIMARY_ARCH_DIR=$(call archdir,$(PRIMARY_ARCH))
 SECONDARY_ARCH_DIR=$(call archdir,$(SECONDARY_ARCH))
 COMMON_DIR=$(WORKSPACE)/common
-IMAGE_DIR=$(WORKSPACE)/image
 
 define gentargets =
 $(PRIMARY_ARCH_DIR)$1 $(SECONDARY_ARCH_DIR)$1 : $(call archdir,%)$1
