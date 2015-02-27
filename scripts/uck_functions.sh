@@ -29,7 +29,7 @@ function install_lang_packages()
                 apt-get -y install $MISSING_LANG_PKG
         fi
 
-        EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>")" # remove extra language packages
+        EXTRA_LANG_PKG="$(dpkg-query --show | cut -f1 | grep -E '^(language-pack|language-support|firefox-locale|thunderbird-locale|libreoffice-help|libreoffice-l10n)' | grep -Ev "[-](de|en)\>" || true)" # remove extra language packages
 
         if [ -n "$EXTRA_LANG_PKG" ]; then
                 apt-get -y purge $EXTRA_LANG_PKG
