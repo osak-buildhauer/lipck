@@ -63,6 +63,7 @@ function install_packages_from_file()
 function install_packages()
 {
 	apt-get dist-upgrade --assume-yes --force-yes
+	apt-get -y autoremove
 	#apt-get install aptitude -y
 
 	#apt-get dist-upgrade -y # make sure we have the newest versions
