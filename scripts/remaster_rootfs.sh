@@ -149,9 +149,6 @@ install_packages
 
 install_kde_defaults
 
-#patch rootfs
-patch_all "$SCRIPT_DIR/patches/" "/"
-
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
 #glib-compile-schemas /usr/share/glib-2.0/schemas

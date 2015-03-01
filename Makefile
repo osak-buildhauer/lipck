@@ -184,6 +184,9 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/run tmpfs defaults 0 0" \
 	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
 	$(MAKE) ARCH=$* rootfs_finalize
+
+	#apply patches
+	$(call patch_all,$(CURDIR)/patches/rootfs,$(call archdir,$*)$(ROOTFS))
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
 rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
