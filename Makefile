@@ -277,7 +277,26 @@ initrd_clean_both:
 
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
 $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_remastered
-	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
+	mkdir -p "$(call archdir,$*)$(INITRD)/lip"
+
+	#nmtelekinese
+	mkdir -p "$(call archdir,$*)$(INITRD)/lip/no-bootloader-icon"
+	cp "$(CURDIR)/contrib/initrd/no-bootloader-icon/ubiquity-kdeui.desktop" "$(call archdir,$*)$(INITRD)/lip/no-bootloader-icon/"
+	cp "$(CURDIR)/contrib/initrd/no-bootloader-icon/25adduser" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/25adduser"
+
+	#liphook
+	cp "$(CURDIR)/contrib/initrd/initrd_hook/24liphook" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/24liphook"
+	#TODO generate ORDER
+	cp "$(CURDIR)/contrib/initrd/initrd_hook/ORDER" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+
+	#install new kernel modules
+	$(RM) "$(call archdir,$*)$(INITRD)/lib/modules/"*
+	version=$$(basename $$(readlink -f "$(call archdir,$*)$(ROOTFS)/vmlinuz") | cut -d'-' -f2-) \
+	cp -a "$(call archdir,$*)$(ROOTFS)/lib/modules/$$version" "$(call archdir,$*)$(INITRD)/lib/modules"
+
+	$(call patch_all,$(CURDIR)/patches/initrd,$(call archdir,$*)$(INITRD))
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_remastered"
 
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
