@@ -427,7 +427,7 @@ $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_A
 		>> "$(REPO_ARCHIVE_DIR)"/Release
 	echo "Date: $$(LC_ALL=C date -u)" \
 		>> "$(REPO_ARCHIVE_DIR)"/Release
-	echo "Architectures: $(PRIMARY_ARCH) $(SECONDARY_ARCH)" \
+	echo "Architectures: $(call altarch,$(PRIMARY_ARCH)) $(call altarch,$(SECONDARY_ARCH))" \
 		>> "$(REPO_ARCHIVE_DIR)"/Release
 	echo "Components: lip" \
 		>> "$(REPO_ARCHIVE_DIR)"/Release
