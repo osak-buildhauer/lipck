@@ -283,10 +283,11 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 	mkdir -p "$(call archdir,$*)$(INITRD)/lip"
 
 	#nmtelekinese
-	mkdir -p "$(call archdir,$*)$(INITRD)/lip/no-bootloader-icon"
-	cp "$(CURDIR)/contrib/initrd/no-bootloader-icon/ubiquity-kdeui.desktop" "$(call archdir,$*)$(INITRD)/lip/no-bootloader-icon/"
-	cp "$(CURDIR)/contrib/initrd/no-bootloader-icon/25adduser" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
-	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/25adduser"
+	mkdir -p "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/nmtelekinese.desktop" "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/nmtelekinese.py" "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/26mopsmops" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/26mopsmops"
 
 	#liphook
 	cp "$(CURDIR)/contrib/initrd/initrd_hook/24liphook" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
