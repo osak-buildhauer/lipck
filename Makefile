@@ -393,6 +393,19 @@ repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
 $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
 	mkdir -p "$(REPO_DIST_DIR)/binary-$*/"
+	#info/release file
+	echo "Archive: $(ISO_RELEASE)" > "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Version: $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Component: main" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Origin: Ubuntu" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Label: Ubuntu" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Architecture: $*" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+
 	cd "$(REPO_ARCHIVE_DIR)" \
 	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
 
@@ -401,9 +414,24 @@ $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST
 repo_metadata : $(REPO_ARCHIVE_DIR)/Release
 $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
-	$(CURDIR)/scripts/mkdebarchive-metadata.sh "$(ISO_RELEASE)" \
-		"$$(echo $(ISO_VERSION) | cut -f-2 -d'.')" \
-		"$(REPO_ARCHIVE_DIR)" "$(PRIMARY_ARCH)" "$(SECONDARY_ARCH)"
+
+	echo "Origin: Ubuntu" > "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Label: LIP Ubuntu Extra Packages" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Suite: $(ISO_RELEASE)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Version: $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Codename: $(ISO_RELEASE)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Date: $$(LC_ALL=C date -u)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Architectures: $(PRIMARY_ARCH) $(SECONDARY_ARCH)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Components: lip" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Description: Ubuntu $(ISO_RELEASE) $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
 
 repo_clean:
 	$(RM) -r "$(REPO_DIST_DIR)"
