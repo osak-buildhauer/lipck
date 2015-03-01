@@ -82,9 +82,10 @@ function install_packages()
 	KERNEL_PKG=$(dpkg -S "$(readlink -f /vmlinuz)" | cut -d ":" -f1)
 	if [ -z "$KERNEL_PKG" ]; then
 		echo "LIPCK: remaster_rootfs: unable to determine installed kernel version; giving up..."
+		exit 1
 	fi
 	#[ "$(uname -m)" == "x86_64" ] || KERNEL_PKG=linux-image-generic-lts-trusty
-	if [ ! -e "$(readlink -f /initrd.img)" ]; then
+	if [ ! -e "$(readlink -f /vmlinuz)" ]; then
                 echo "LIPCK: No kernel in place; try to reinstall kernel image package:"
 		echo "       $KERNEL_PKG"
 		apt-get --reinstall -y install $KERNEL_PKG
