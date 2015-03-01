@@ -30,7 +30,7 @@ test -n "$ARCH"  || { echo "$(basename $0): fatal error: no architecture specifi
 echo
 echo "==> Fetching packages for offline repository for $ARCH"
 
-#source common functions (e.g. patch_all)
+#source common functions
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
         source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi

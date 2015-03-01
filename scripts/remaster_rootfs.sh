@@ -23,7 +23,7 @@ set -e
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 
-#source common functions (e.g. patch_all)
+#source common functions
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
 	source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
