@@ -296,7 +296,7 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 	cp "$(CURDIR)/contrib/initrd/initrd_hook/ORDER" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
 
 	#install new kernel modules
-	$(RM) "$(call archdir,$*)$(INITRD)/lib/modules/"*
+	$(RM) -R "$(call archdir,$*)$(INITRD)/lib/modules/"*
 	version=$$(basename $$(readlink -f "$(call archdir,$*)$(ROOTFS)/vmlinuz") | cut -d'-' -f2-) \
 	cp -a "$(call archdir,$*)$(ROOTFS)/lib/modules/$$version" "$(call archdir,$*)$(INITRD)/lib/modules"
 
