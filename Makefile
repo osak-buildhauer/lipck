@@ -79,6 +79,12 @@ define getisoname =
 $(ISO_PREFIX)desktop-$(call altarch,$1).iso
 endef
 
+#applies all patches in $1 to target directory $2
+define patch_all =
+$(foreach p,$(wildcard $1/*),echo "Applying \"$1\" to \"$2\":"; \
+	cat "$p" | patch -d"$2" -p1; echo "done.";)
+endef
+
 CASPER_SOURCE_DIR=$(ISO_CONTENT)/casper
 INITRD_SOURCE=$(CASPER_SOURCE_DIR)/initrd.lz
 SQUASHFS_SOURCE=$(CASPER_SOURCE_DIR)/filesystem.squashfs
