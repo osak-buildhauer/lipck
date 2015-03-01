@@ -297,8 +297,8 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 
 	#install new kernel modules
 	$(RM) -R "$(call archdir,$*)$(INITRD)/lib/modules/"*
-	version=$$(basename $$(readlink -f "$(call archdir,$*)$(ROOTFS)/vmlinuz") | cut -d'-' -f2-) \
-	cp -a "$(call archdir,$*)$(ROOTFS)/lib/modules/$$version" "$(call archdir,$*)$(INITRD)/lib/modules"
+	cp -a "$(call archdir,$*)$(ROOTFS)/lib/modules/$(shell basename $$(readlink -f "$(call archdir,$*)$(ROOTFS)/vmlinuz") | cut -d'-' -f2-)" \
+		 "$(call archdir,$*)$(INITRD)/lib/modules"
 
 	$(call patch_all,$(CURDIR)/patches/initrd,$(call archdir,$*)$(INITRD))
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_remastered"
