@@ -23,7 +23,7 @@ set -e
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 
-#source common functions (e.g. patch_all)
+#source common functions
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
 	source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
@@ -149,9 +149,6 @@ copy_modprobe_d
 install_packages
 
 install_kde_defaults
-
-#patch rootfs
-patch_all "$SCRIPT_DIR/patches/" "/"
 
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
