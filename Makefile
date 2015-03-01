@@ -182,7 +182,7 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$*)$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
 	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/tmp tmpfs defaults 0 0" \
 	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/run tmpfs defaults 0 0" \
-	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
+	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/rootfs_remaster.sh
 	$(MAKE) ARCH=$* rootfs_finalize
 
 	#apply patches
@@ -376,7 +376,7 @@ image : image_content
 repo_packages : $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(ARCH))
 $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(SECONDARY_ARCH)) : $(REPO_ARCHIVE_DIR)/Packages.% : $(call archdir,$*)$(STATE_DIR)/rootfs_remastered | $(IMAGE_DIR)
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_prepare
-	mkdir "$(call archdir,$*)$(ROOTFS)/cdrom"
+	mkdir -p "$(call archdir,$*)$(ROOTFS)/cdrom"
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
         -s lxc.arch="$(call to_arch,$*)" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
@@ -385,7 +385,7 @@ $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)
         -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/run tmpfs defaults 0 0" \
 	-s lxc.mount.entry="$(IMAGE_DIR) $(call archdir,$*)$(ROOTFS)/cdrom none defaults,bind 0 0" \
         -- /bin/bash -l /remaster/remaster.proxy.sh \
-	/remaster/scripts/fill_offline_repo.sh "$*" "/cdrom"
+	/remaster/scripts/repo_packages.sh "$*" "/cdrom"
 	rmdir "$(call archdir,$*)$(ROOTFS)/cdrom"
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_finalize
 
