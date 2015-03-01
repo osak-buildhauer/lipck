@@ -345,7 +345,7 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 	touch "$(IMAGE_DIR)/.lipbinaries"
 
 image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
-	$(CURDIR)/scripts/remaster_iso.sh "$(CURDIR)" "$(IMAGE_DIR)"
+	$(call patch_all,$(CURDIR)/patches/iso/,$(IMAGE_DIR))
 	touch "$(IMAGE_DIR)/.remastered"
 
 image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)/grub/lipinfo.cfg
