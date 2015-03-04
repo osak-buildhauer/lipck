@@ -2,7 +2,9 @@
 ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular_4.0.2-1_amd64.deb
 ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-common_4.0.2-1_all.deb
 ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-bin_4.0.2-1_amd64.deb
+ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-bin_4.0.2-1_i386.deb
+ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular_4.0.2-1_i386.deb
 
 #mainline kernel
 http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.0-rc2-vivid/linux-image-4.0.0-040000rc2-generic_4.0.0-040000rc2.201503031836_amd64.deb
-
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.0-rc2-vivid/linux-image-4.0.0-040000rc2-generic_4.0.0-040000rc2.201503031836_i386.deb
