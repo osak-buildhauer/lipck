@@ -292,8 +292,12 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 	#liphook
 	cp "$(CURDIR)/contrib/initrd/initrd_hook/24liphook" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
 	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/24liphook"
-	#TODO generate ORDER
-	cp "$(CURDIR)/contrib/initrd/initrd_hook/ORDER" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+
+	$(RM) "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/ORDER"
+	find "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/" -type f \
+		| xargs basename -a | grep -E "^[0-9]{2}" | sort | xargs -I{} \
+		echo -e "/scripts/casper-bottom/{}\n[ -e /conf/param.conf ] && . /conf/param.conf" \
+		>> "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/ORDER"
 
 	#install new kernel modules
 	$(RM) -R "$(call archdir,$*)$(INITRD)/lib/modules/"*
