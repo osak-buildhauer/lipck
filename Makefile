@@ -79,6 +79,12 @@ define getisoname =
 $(ISO_PREFIX)desktop-$(call altarch,$1).iso
 endef
 
+#applies all patches in $1 to target directory $2
+define patch_all =
+$(foreach p,$(wildcard $1/*),echo "Applying \"$1\" to \"$2\":" && \
+	cat "$p" | patch -d"$2" -p1 && echo "done." && ) true
+endef
+
 CASPER_SOURCE_DIR=$(ISO_CONTENT)/casper
 INITRD_SOURCE=$(CASPER_SOURCE_DIR)/initrd.lz
 SQUASHFS_SOURCE=$(CASPER_SOURCE_DIR)/filesystem.squashfs
@@ -176,8 +182,11 @@ $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR
 	-s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$*)$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
 	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/tmp tmpfs defaults 0 0" \
 	-s lxc.mount.entry="none $(call archdir,$*)$(ROOTFS)/run tmpfs defaults 0 0" \
-	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/remaster_rootfs.sh
+	-- /bin/bash -l /remaster/remaster.proxy.sh /remaster/scripts/rootfs_remaster.sh
 	$(MAKE) ARCH=$* rootfs_finalize
+
+	#apply patches
+	$(call patch_all,$(CURDIR)/patches/rootfs,$(call archdir,$*)$(ROOTFS))
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_remastered"
 
 rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
@@ -271,7 +280,31 @@ initrd_clean_both:
 
 initrd_remaster : $(ARCH_DIR)$(STATE_DIR)/initrd_remastered
 $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR)/initrd_extracted $(call archdir,%)$(STATE_DIR)/rootfs_remastered
-	$(CURDIR)/scripts/remaster_initrd.sh "$(CURDIR)" "$(call archdir,$*)$(INITRD)" "$(call archdir,$*)$(ROOTFS)"
+	mkdir -p "$(call archdir,$*)$(INITRD)/lip"
+
+	#nmtelekinese
+	mkdir -p "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/nmtelekinese.desktop" "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/nmtelekinese.py" "$(call archdir,$*)$(INITRD)/lip/nm"
+	cp "$(CURDIR)/contrib/initrd/nmtelekinese/26mopsmops" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/26mopsmops"
+
+	#liphook
+	cp "$(CURDIR)/contrib/initrd/initrd_hook/24liphook" "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/"
+	chmod +x "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/24liphook"
+
+	$(RM) "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/ORDER"
+	find "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/" -type f \
+		| xargs basename -a | grep -E "^[0-9]{2}" | sort | xargs -I{} \
+		echo -e "/scripts/casper-bottom/{}\n[ -e /conf/param.conf ] && . /conf/param.conf" \
+		>> "$(call archdir,$*)$(INITRD)/scripts/casper-bottom/ORDER"
+
+	#install new kernel modules
+	$(RM) -R "$(call archdir,$*)$(INITRD)/lib/modules/"*
+	cp -a "$(call archdir,$*)$(ROOTFS)/lib/modules/$(shell basename $$(readlink -f "$(call archdir,$*)$(ROOTFS)/vmlinuz") | cut -d'-' -f2-)" \
+		 "$(call archdir,$*)$(INITRD)/lib/modules"
+
+	$(call patch_all,$(CURDIR)/patches/initrd,$(call archdir,$*)$(INITRD))
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_remastered"
 
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
@@ -320,7 +353,7 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 	touch "$(IMAGE_DIR)/.lipbinaries"
 
 image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
-	$(CURDIR)/scripts/remaster_iso.sh "$(CURDIR)" "$(IMAGE_DIR)"
+	$(call patch_all,$(CURDIR)/patches/iso/,$(IMAGE_DIR))
 	touch "$(IMAGE_DIR)/.remastered"
 
 image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)/grub/lipinfo.cfg
@@ -348,7 +381,7 @@ image : image_content
 repo_packages : $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(ARCH))
 $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(SECONDARY_ARCH)) : $(REPO_ARCHIVE_DIR)/Packages.% : $(call archdir,$*)$(STATE_DIR)/rootfs_remastered | $(IMAGE_DIR)
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_prepare
-	mkdir "$(call archdir,$*)$(ROOTFS)/cdrom"
+	mkdir -p "$(call archdir,$*)$(ROOTFS)/cdrom"
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
         -s lxc.arch="$(call to_arch,$*)" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
@@ -357,7 +390,7 @@ $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)
         -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/run tmpfs defaults 0 0" \
 	-s lxc.mount.entry="$(IMAGE_DIR) $(call archdir,$*)$(ROOTFS)/cdrom none defaults,bind 0 0" \
         -- /bin/bash -l /remaster/remaster.proxy.sh \
-	/remaster/scripts/fill_offline_repo.sh "$*" "/cdrom"
+	/remaster/scripts/repo_packages.sh "$*" "/cdrom"
 	rmdir "$(call archdir,$*)$(ROOTFS)/cdrom"
 	$(MAKE) ARCH=$(call to_arch,$*) rootfs_finalize
 
@@ -365,6 +398,19 @@ repo_package_info : $(REPO_DIST_DIR)/binary-$(call altarch,$(ARCH))/Packages.bz2
 $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2 : $(REPO_DIST_DIR)/binary-%/Packages.bz2 : $(REPO_ARCHIVE_DIR)/Packages.%
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
 	mkdir -p "$(REPO_DIST_DIR)/binary-$*/"
+	#info/release file
+	echo "Archive: $(ISO_RELEASE)" > "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Version: $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Component: main" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Origin: Ubuntu" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Label: Ubuntu" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+	echo "Architecture: $*" \
+		>> "$(REPO_DIST_DIR)/binary-$*/Release"
+
 	cd "$(REPO_ARCHIVE_DIR)" \
 	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
 
@@ -373,9 +419,24 @@ $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST
 repo_metadata : $(REPO_ARCHIVE_DIR)/Release
 $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
-	$(CURDIR)/scripts/mkdebarchive-metadata.sh "$(ISO_RELEASE)" \
-		"$$(echo $(ISO_VERSION) | cut -f-2 -d'.')" \
-		"$(REPO_ARCHIVE_DIR)" "$(PRIMARY_ARCH)" "$(SECONDARY_ARCH)"
+
+	echo "Origin: Ubuntu" > "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Label: LIP Ubuntu Extra Packages" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Suite: $(ISO_RELEASE)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Version: $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Codename: $(ISO_RELEASE)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Date: $$(LC_ALL=C date -u)" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Architectures: $(call altarch,$(PRIMARY_ARCH)) $(call altarch,$(SECONDARY_ARCH))" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Components: lip" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
+	echo "Description: Ubuntu $(ISO_RELEASE) $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
+		>> "$(REPO_ARCHIVE_DIR)"/Release
 
 repo_clean:
 	$(RM) -r "$(REPO_DIST_DIR)"

@@ -30,7 +30,7 @@ test -n "$ARCH"  || { echo "$(basename $0): fatal error: no architecture specifi
 echo
 echo "==> Fetching packages for offline repository for $ARCH"
 
-#source common functions (e.g. patch_all)
+#source common functions
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
         source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
@@ -56,8 +56,12 @@ echo "Updating package lists..."
 apt-get update
 echo "ok."
 
+echo "hey apt - which packages do we need (and where do we get them)?"
+PKG_URLS=$(apt-get install --reinstall --print-uris -qq $PKG_LIST | cut -d"'" -f2)
+PKG_URLS=$PKG_URLS $(get_packages_from_file "$CONTRIB_DIR/offline_repo_packages.manualurls")
+
 echo "downloading archives. this may take some time..."
-wget -nc -P $PKG_DESTINATION $(apt-get install --reinstall --print-uris -qq $PKG_LIST | cut -d"'" -f2)
+wget -nc -P $PKG_DESTINATION $PKG_URLS
 #wget -nc -P $PKG_DESTINATION $(apt-get -o APT::Architecture=$ARCHITECTURE install --reinstall --allow-unauthenticated --print-uris -qq $PKG_LIST | cut -d"'" -f2)
 
 revert_initctl

@@ -23,7 +23,7 @@ set -e
 SCRIPT_DIR="/remaster"
 CONTRIB_DIR="$SCRIPT_DIR/contrib/"
 
-#source common functions (e.g. patch_all)
+#source common functions
 if [ -e "$SCRIPT_DIR/scripts/common_functions.sh" ]; then
 	source "$SCRIPT_DIR/scripts/common_functions.sh"
 fi
@@ -82,9 +82,10 @@ function install_packages()
 	KERNEL_PKG=$(dpkg -S "$(readlink -f /vmlinuz)" | cut -d ":" -f1)
 	if [ -z "$KERNEL_PKG" ]; then
 		echo "LIPCK: remaster_rootfs: unable to determine installed kernel version; giving up..."
+		exit 1
 	fi
 	#[ "$(uname -m)" == "x86_64" ] || KERNEL_PKG=linux-image-generic-lts-trusty
-	if [ ! -e "$(readlink -f /initrd.img)" ]; then
+	if [ ! -e "$(readlink -f /vmlinuz)" ]; then
                 echo "LIPCK: No kernel in place; try to reinstall kernel image package:"
 		echo "       $KERNEL_PKG"
 		apt-get --reinstall -y install $KERNEL_PKG
@@ -148,9 +149,6 @@ copy_modprobe_d
 install_packages
 
 install_kde_defaults
-
-#patch rootfs
-patch_all "$SCRIPT_DIR/patches/" "/"
 
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
