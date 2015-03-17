@@ -36,7 +36,8 @@ spyder
 #Informatik
 postgresql
 dia
-haskell-platform
+#haskell-platform
+ghc
 default-jdk
 swi-prolog
 
