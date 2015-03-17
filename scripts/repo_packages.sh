@@ -58,7 +58,10 @@ echo "ok."
 
 echo "hey apt - which packages do we need (and where do we get them)?"
 PKG_URLS=$(apt-get install --reinstall --print-uris -qq $PKG_LIST | cut -d"'" -f2)
-PKG_URLS=$PKG_URLS $(get_packages_from_file "$CONTRIB_DIR/offline_repo_packages.manualurls")
+
+echo "package urls:"
+echo "$PKG_URLS"
+PKG_URLS="$PKG_URLS $(get_packages_from_file "$CONTRIB_DIR/offline_repo_packages.manualurls")"
 
 echo "downloading archives. this may take some time..."
 wget -nc -P $PKG_DESTINATION $PKG_URLS
