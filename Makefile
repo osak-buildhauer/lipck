@@ -452,6 +452,9 @@ config $(CONFIG_FILE):
 config_clean:
 	$(RM) $(CONFIG_FILE)
 
+%.vmdk : %.img
+	vboxmanage convertfromraw --format vmdk "$<" "$@"
+
 help:
 	@echo "Defaul Architecture: $(ARCH) ($(call altarch,$(ARCH)))"
 	@echo "Workspace: $(WORKSPACE)"
