@@ -351,8 +351,8 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 		 "$(IMAGE_DIR)/casper/"
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
-	$(RSYNC) --progress "$(PRIMARY_ARCH_DIR)/gparted-live.iso" \
-		 "$(SECONDARY_ARCH_DIR)/gparted-live.iso" "$(IMAGE_DIR)/"
+	$(RSYNC) --progress "$(PRIMARY_ARCH_DIR)/gparted-live.iso" "$(IMAGE_DIR)/gparted-live-$(PRIMARY_ARCH)"
+	$(RSYNC) --progress "$(SECONDARY_ARCH_DIR)/gparted-live.iso" "$(IMAGE_DIR)/gparted-live-$(SECONDARY_ARCH)"
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 	touch "$(IMAGE_DIR)/.lipbinaries"
