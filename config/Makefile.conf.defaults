@@ -31,3 +31,5 @@ IMAGE_DIR=$(WORKSPACE)/image_files/
 IMAGE_GIT_URL=https://www.fsmpi.rwth-aachen.de/git/lipstick
 IMAGE_GIT_BRANCH=ws14
 IMAGE_EXTRA_INFO=
+
+GPARTED_VERSION=0.21.0-1

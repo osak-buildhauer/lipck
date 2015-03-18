@@ -79,6 +79,8 @@ define getisoname =
 $(ISO_PREFIX)desktop-$(call altarch,$1).iso
 endef
 
+GPARTED_BASE_URL=http://sourceforge.net/projects/gparted/files/gparted-live-stable/$(GPARTED_VERSION)/
+
 #applies all patches in $1 to target directory $2
 define patch_all =
 $(foreach p,$(wildcard $1/*),@echo "Applying \"$1\" to \"$2\":" && \
@@ -327,7 +329,8 @@ image_git_pull: |$(IMAGE_DIR)/.git
 IMAGE_BINARIES= $(COMMON_DIR)/lip-$(PRIMARY_ARCH).squashfs $(COMMON_DIR)/lip-$(SECONDARY_ARCH).squashfs $(COMMON_DIR)/lip-common.squashfs \
 $(PRIMARY_ARCH_DIR)$(INITRD_TARGET) $(SECONDARY_ARCH_DIR)$(INITRD_TARGET) \
 $(PRIMARY_ARCH_DIR)$(STATE_DIR)/iso_extracted $(SECONDARY_ARCH_DIR)$(STATE_DIR)/iso_extracted \
-$(PRIMARY_ARCH_DIR)/filesystem.size
+$(PRIMARY_ARCH_DIR)/filesystem.size \
+$(PRIMARY_ARCH_DIR)/gparted-live.iso $(SECONDARY_ARCH_DIR)/gparted-live.iso
 image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/dists" \
 		 "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/isolinux" \
@@ -348,6 +351,8 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 		 "$(IMAGE_DIR)/casper/"
 	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(PRIMARY_ARCH).lz"
 	$(RSYNC) "$(SECONDARY_ARCH_DIR)$(INITRD_TARGET)" "$(IMAGE_DIR)/casper/initrd-$(SECONDARY_ARCH).lz"
+	$(RSYNC) --progress "$(PRIMARY_ARCH_DIR)/gparted-live.iso" \
+		 "$(SECONDARY_ARCH_DIR)/gparted-live.iso" "$(IMAGE_DIR)/"
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
 	touch "$(IMAGE_DIR)/.lipbinaries"
@@ -377,6 +382,10 @@ $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
 	echo "set lip_extra_info=\"$(IMAGE_EXTRA_INFO)\"" >> $(IMAGE_DIR)/grub/lipinfo.cfg
 
 image : image_content
+
+gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
+$(call gentargets,/gparted-live.iso) :
+	wget -O "$@" "$(GPARTED_BASE_URL)/gparted-live-$(GPARTED_VERSION)-$(subst $(SECONDARY_ARCH),i686-pae,$(subst $(PRIMARY_ARCH),amd64,$*)).iso"
 
 repo_packages : $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(ARCH))
 $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(PRIMARY_ARCH)) $(REPO_ARCHIVE_DIR)/Packages.$(call altarch,$(SECONDARY_ARCH)) : $(REPO_ARCHIVE_DIR)/Packages.% : $(call archdir,$*)$(STATE_DIR)/rootfs_remastered | $(IMAGE_DIR)
