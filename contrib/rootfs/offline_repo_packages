@@ -45,3 +45,4 @@ swi-prolog
 #Singular ist nicht in den Packetquellen :-(
 #Aber wir brauchen Abhängigkeiten
 libntl0
+libcdd0d
