@@ -1,6 +1,3 @@
-- Build the offline repository automatically
-  WiP: offline_repo branch
-
 - Documentation containing
   - an explanation of the structure of the original
     and the remastered image,
@@ -9,9 +6,6 @@
     What do we want to achieve with lipck?,
   - and a deep documentation of the single steps,
     e.g. target wise.
-
-- aptitude triggers the "set -e" in remaster_rootfs
-  Known workaround: comment the "set -e"
 
 - Solve the lxc.init problem (no lxc.init available in Ubuntu rootfs
   but it is required to install stuff inside the rootfs...)
