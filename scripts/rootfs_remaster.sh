@@ -124,6 +124,11 @@ function copy_modprobe_d()
 	update-initramfs -u
 }
 
+function copy_sysctl_d()
+{
+	cp -r "$SCRIPT_DIR/contrib/sysctl.d/" "/etc/sysctl.d/"
+}
+
 function hold_packages()
 {
 	for PKG in $@; do
@@ -146,6 +151,7 @@ hold_packages $PKGS_TO_HOLD
 
 prepare_install
 copy_modprobe_d
+copy_sysctl_d
 install_packages
 
 install_kde_defaults
