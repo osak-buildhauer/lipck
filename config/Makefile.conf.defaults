@@ -23,13 +23,13 @@ SECONDARY_ARCH=i686
 ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu/releases
 ISO_RELEASE=trusty
 ISO_CHANNEL=release
-ISO_VERSION=14.04.1
+ISO_VERSION=14.04.2
 ISO_FLAVOR=kubuntu
 ISO_PATTERN_FLAGS=
 
 IMAGE_DIR=$(WORKSPACE)/image_files/
 IMAGE_GIT_URL=https://www.fsmpi.rwth-aachen.de/git/lipstick
-IMAGE_GIT_BRANCH=ws14
+IMAGE_GIT_BRANCH=ss15
 IMAGE_EXTRA_INFO=
 
 GPARTED_VERSION=0.21.0-1
