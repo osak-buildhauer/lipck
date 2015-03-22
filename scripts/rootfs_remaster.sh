@@ -120,13 +120,13 @@ function install_kde_defaults()
 
 function copy_modprobe_d()
 {
-	cp -r "$SCRIPT_DIR/contrib/modprobe.d/" "/etc/modprobe.d/"
+	cp "$SCRIPT_DIR/contrib/modprobe.d/"* "/etc/modprobe.d/"
 	update-initramfs -u
 }
 
 function copy_sysctl_d()
 {
-	cp -r "$SCRIPT_DIR/contrib/sysctl.d/" "/etc/sysctl.d/"
+	cp "$SCRIPT_DIR/contrib/sysctl.d/"* "/etc/sysctl.d/"
 }
 
 function hold_packages()
