@@ -201,7 +201,7 @@ rootfs_console : $(call archdir,$(ARCH))$(STATE_DIR)/rootfs_extracted | $(APT_CA
         -s lxc.mount.entry="$(APT_CACHE_DIR) $(call archdir,$(ARCH))$(ROOTFS)/var/cache/apt/ none defaults,bind 0 0" \
         -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/tmp tmpfs defaults 0 0" \
         -s lxc.mount.entry="none $(call archdir,$(ARCH))$(ROOTFS)/run tmpfs defaults 0 0" \
-        -- /bin/bash -l /remaster/remaster.proxy.sh /bin/bash -l
+        -- /bin/bash -l /remaster/remaster.proxy.sh /bin/bash -l || exit 0
 	@echo
 	@echo "==> LIPCK: Leaving container and cleaning up..."
 	@echo
