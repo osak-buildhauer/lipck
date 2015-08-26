@@ -375,9 +375,15 @@ image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)/grub/lipinfo
 	@echo "Image content is ready: $(IMAGE_DIR)"
 
 image_skel_file: | $(WORKSPACE)
-	xz -d --keep --stdout "$(CURDIR)/contrib/image/multiboot.skel.img.xz" > "$(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
+	truncate -s "$(IMAGE_PART_SIZE)" "$(IMAGE_FILE)".part
+	mkfs.vfat -n "$(IMAGE_PART_LABEL)" "$(IMAGE_FILE)".part
+	ddrescue --output-position=2048 --sparse "$(IMAGE_FILE)".part "$(IMAGE_FILE)"
+	#sfdisk: start, as large as possible, FAT, bootable
+	echo -e "label: dos\nunit: sectors\n2048,+,b,*"\
+		| sfdisk "$(IMAGE_FILE)"
+
 	@echo
-	@echo "Image skeleton is ready: $(if $(IMAGE_FILE),$(IMAGE_FILE),$(WORKSPACE)/image.img)"
+	@echo "Image skeleton is ready: $(IMAGE_FILE)"
 	@echo "You may want to mount appropriately (e.g. with kpartx) to $(IMAGE_DIR) and execute \"make image\""
 
 image_grub_lipinfo : $(IMAGE_DIR)/grub/lipinfo.cfg
