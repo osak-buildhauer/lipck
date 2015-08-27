@@ -182,10 +182,10 @@ ifneq ($(strip $(APT_SOURCE_URL_OVERRIDE)),)
 	#override apt sources list
 	echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE) main restricted universe multiverse" \
 		> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
-        echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-security main restricted universe multiverse" \
-                >> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
-        echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-updates main restricted universe multiverse" \
-                >> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
+	echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-security main restricted universe multiverse" \
+		>> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
+	echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-updates main restricted universe multiverse" \
+		>> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
 endif
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
