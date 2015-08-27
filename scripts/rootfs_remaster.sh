@@ -42,10 +42,6 @@ fi
 
 function prepare_install()
 {
-	if [ -e "$CONTRIB_DIR/lip_sources.list" ]; then
-		cp -v "$CONTRIB_DIR/lip_sources.list" "/etc/apt/sources.list"
-	fi
-	
 	#uncomment if newest texlive is not part of your distribution
 	#add-apt-repository -y ppa:texlive-backports/ppa
 

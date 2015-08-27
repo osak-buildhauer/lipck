@@ -178,6 +178,15 @@ $(call gentargets,$(STATE_DIR)/rootfs_prepared) : $(call archdir,%)$(STATE_DIR)/
 rootfs_remaster : $(ARCH_DIR)$(STATE_DIR)/rootfs_remastered
 $(call gentargets,$(STATE_DIR)/rootfs_remastered) : $(call archdir,%)$(STATE_DIR)/rootfs_extracted | $(APT_CACHE_DIR)
 	$(MAKE) ARCH=$* rootfs_prepare
+ifneq($(strip $(APT_SOURCE_URL_OVERRIDE)),)
+	#override apt sources list
+	echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE) main restricted universe multiverse" \
+		> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
+        echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-security main restricted universe multiverse" \
+                >> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
+        echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-updates main restricted universe multiverse" \
+                >> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
+endif
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$*" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
