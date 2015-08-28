@@ -70,6 +70,7 @@ ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
 IMAGE_PART_FILE=$(WORKSPACE)/image.img.part
+GRUB_ASSEMBLE_DIR=$(WORKSPACE)/grub
 
 ifneq (,$(findstring release-prefix,$(ISO_PATTERN_FLAGS)))
   ISO_PREFIX=$(ISO_RELEASE)-
@@ -384,6 +385,20 @@ $(IMAGE_PART_FILE):
 	@echo
 	@echo "Image partition skeleton is ready: $@"
 
+image_grub_mkimage_efi: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi
+$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi : $(GRUB_ASSEMBLE_DIR)/grub.%-efi : | $(WORKSPACE)
+	mkdir -p "$(GRUB_ASSEMBLE_DIR)"
+	grub-mkimage --config "$(CURDIR)/contrib/image/grub_early.cfg" \
+		--output "$@" --format "$*-efi" \
+		$(IMAGE_GRUB_EFI_MODULES)
+
+image_grub_mkimage_mbr: $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
+$(GRUB_ASSEMBLE_DIR)/grub.i386-pc : | $(WORKSPACE)
+	mkdir -p "$(GRUB_ASSEMBLE_DIR)"
+	grub-mkimage --prefix "(hd0,msdos1)/boot/grub" \
+                --output "$@" --format "i386-pc" \
+                $(IMAGE_GRUB_MBR_MODULES)
+
 image_assemble: $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE)
 	ddrescue --output-position=2048 --sparse "$(IMAGE_PART_FILE)" "$@"
@@ -396,6 +411,7 @@ $(IMAGE_FILE): $(IMAGE_PART_FILE)
 
 image_clean:
 	$(RM) "$(IMAGE_PART_FILE)"
+	$(RM) -r "$(GRUB_ASSEMBLE_DIR)"
 
 image_grub_lipinfo : $(IMAGE_DIR)/grub/lipinfo.cfg
 $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
@@ -514,7 +530,7 @@ ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize root
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
-IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_clean
+IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_clean
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
