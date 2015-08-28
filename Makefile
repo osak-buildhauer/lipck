@@ -69,6 +69,8 @@ ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
 ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
+IMAGE_PART_FILE=$(WORKSPACE)/image.img.part
+
 ifneq (,$(findstring release-prefix,$(ISO_PATTERN_FLAGS)))
   ISO_PREFIX=$(ISO_RELEASE)-
 else
@@ -374,17 +376,23 @@ image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)/grub/lipinfo
 	@echo
 	@echo "Image content is ready: $(IMAGE_DIR)"
 
-image_skel_file: | $(WORKSPACE)
-	truncate -s "$(IMAGE_PART_SIZE)" "$(IMAGE_FILE)".part
-	mkfs.vfat -n "$(IMAGE_PART_LABEL)" "$(IMAGE_FILE)".part
-	ddrescue --output-position=2048 --sparse "$(IMAGE_FILE)".part "$(IMAGE_FILE)"
-	#sfdisk: start, as large as possible, FAT, bootable
-	echo -e "label: dos\nunit: sectors\n2048,+,b,*"\
-		| sfdisk "$(IMAGE_FILE)"
+image_skel_file: $(IMAGE_PART_FILE)
+$(IMAGE_PART_FILE):
+	truncate -s "$(IMAGE_PART_SIZE)" "$@"
+	mkfs.vfat -n "$(IMAGE_PART_LABEL)" "$@"
 
 	@echo
-	@echo "Image skeleton is ready: $(IMAGE_FILE)"
-	@echo "You may want to mount appropriately (e.g. with kpartx) to $(IMAGE_DIR) and execute \"make image\""
+	@echo "Image partition skeleton is ready: $@"
+
+image_assemble: $(IMAGE_FILE)
+$(IMAGE_FILE): $(IMAGE_PART_FILE)
+	ddrescue --output-position=2048 --sparse "$(IMAGE_PART_FILE)" "$@"
+	#sfdisk: start, as large as possible, FAT, bootable
+	echo -e "label: dos\nunit: sectors\n2048,+,b,*"\
+		| sfdisk "$@"
+
+	@echo
+	@echo "Image is ready: $@"
 
 image_grub_lipinfo : $(IMAGE_DIR)/grub/lipinfo.cfg
 $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
@@ -503,7 +511,7 @@ ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize root
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
-IMAGE_PHONY=image image_content image_skel_file image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo
+IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
