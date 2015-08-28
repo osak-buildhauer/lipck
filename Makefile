@@ -399,8 +399,14 @@ $(GRUB_ASSEMBLE_DIR)/grub.i386-pc : | $(WORKSPACE)
                 --output "$@" --format "i386-pc" \
                 $(IMAGE_GRUB_MBR_MODULES)
 
+image_grub_mbr_template: $(GRUB_ASSEMBLE_DIR)/mbr.img
+$(GRUB_ASSEMBLE_DIR)/mbr.img : $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
+	dd if=/usr/lib/grub/i386-pc/boot.img of="$@" bs=446 count=1
+	dd if="$(GRUB_ASSEMBLE_DIR)/grub.i386-pc" of="$@" bs=512 seek=1
+
 image_assemble: $(IMAGE_FILE)
-$(IMAGE_FILE): $(IMAGE_PART_FILE)
+$(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
+	cp "$(GRUB_ASSEMBLE_DIR)/mbr.img" "$@"
 	ddrescue --output-position=2048s --sparse "$(IMAGE_PART_FILE)" "$@"
 	#sfdisk: start, as large as possible, FAT, bootable
 	echo -e "label: dos\nunit: sectors\n2048,+,b,*"\
@@ -530,7 +536,7 @@ ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize root
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
-IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_clean
+IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_grub_mbr_template image_clean
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
