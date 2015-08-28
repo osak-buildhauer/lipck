@@ -401,7 +401,7 @@ $(GRUB_ASSEMBLE_DIR)/grub.i386-pc : | $(WORKSPACE)
 
 image_assemble: $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE)
-	ddrescue --output-position=2048 --sparse "$(IMAGE_PART_FILE)" "$@"
+	ddrescue --output-position=2048s --sparse "$(IMAGE_PART_FILE)" "$@"
 	#sfdisk: start, as large as possible, FAT, bootable
 	echo -e "label: dos\nunit: sectors\n2048,+,b,*"\
 		| sfdisk "$@"
