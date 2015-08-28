@@ -37,10 +37,10 @@ IMAGE_EXTRA_INFO=
 IMAGE_PART_SIZE=6G
 IMAGE_PART_LABEL=MULTIBOOT
 
-IMAGE_GRUB_COMMON_MODULES=part_msdos fat ntfs ext2
+IMAGE_GRUB_COMMON_MODULES=part_msdos fat ext2
 IMAGE_GRUB_MBR_MODULES=$(IMAGE_GRUB_COMMON_MODULES) biosdisk
 IMAGE_GRUB_EFI_MODULES=$(IMAGE_GRUB_COMMON_MODULES) normal part_gpt terminal crypto \
 	search_fs_file search_fs_uuid search_label extcmd lvm gfxterm loopback \
-	efifwsetup efi_gop efinet efi_uga
+	efifwsetup efi_gop efinet efi_uga exfat ntfs
 
 GPARTED_VERSION=0.21.0-1
