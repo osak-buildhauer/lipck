@@ -324,7 +324,7 @@ initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma $(LZMA_FLAGS) -z > "$(call archdir,$*)$(INITRD_TARGET)"
 
-clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both
+clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both image_clean
 
 image_git $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	test ! -e "$(IMAGE_DIR)/.git"
@@ -393,6 +393,9 @@ $(IMAGE_FILE): $(IMAGE_PART_FILE)
 
 	@echo
 	@echo "Image is ready: $@"
+
+image_clean:
+	$(RM) "$(IMAGE_PART_FILE)"
 
 image_grub_lipinfo : $(IMAGE_DIR)/grub/lipinfo.cfg
 $(IMAGE_DIR)/grub/lipinfo.cfg : | $(WORKSPACE)
@@ -511,7 +514,7 @@ ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize root
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
-IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo
+IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_clean
 COMMON_PHONY=help workspace config config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
