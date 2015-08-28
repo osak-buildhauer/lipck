@@ -33,5 +33,8 @@ IMAGE_DIR=$(WORKSPACE)/image_files/
 IMAGE_GIT_URL=https://www.fsmpi.rwth-aachen.de/git/lipstick
 IMAGE_GIT_BRANCH=ss15
 IMAGE_EXTRA_INFO=
+#size of the fat partition; cf. "man truncate" for format/units
+IMAGE_PART_SIZE=6G
+IMAGE_PART_LABEL=MULTIBOOT
 
 GPARTED_VERSION=0.21.0-1
