@@ -458,7 +458,7 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg : | $(WORKSPACE)
 	echo "set lip_release=\"$(ISO_RELEASE)\"" >> "$@"
 	echo "set lip_extra_info=\"$(IMAGE_EXTRA_INFO)\"" >> "$@"
 
-image : image_content
+image : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
 $(call gentargets,/gparted-live.iso) :
