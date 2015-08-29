@@ -367,6 +367,9 @@ image_binary_files $(IMAGE_DIR)/.lipbinaries: image_git_pull $(IMAGE_BINARIES)
 	$(RSYNC) --progress "$(SECONDARY_ARCH_DIR)/gparted-live.iso" "$(IMAGE_DIR)/gparted-live-$(SECONDARY_ARCH).iso"
 	cd "$(PRIMARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(PRIMARY_ARCH)"
 	cd "$(SECONDARY_ARCH_DIR)$(ROOTFS)" && $(RSYNC) -L vmlinuz "$(IMAGE_DIR)/casper/vmlinuz-$(SECONDARY_ARCH)"
+	mkdir -p "$(IMAGE_DIR)/boot/grub/"
+	$(RSYNC) "$(PRIMARY_ARCH_DIR)$(ISO_CONTENT)/boot/grub/x86_64-efi" \
+		 "$(IMAGE_DIR)/boot/grub/"
 	touch "$(IMAGE_DIR)/.lipbinaries"
 
 image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
