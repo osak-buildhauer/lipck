@@ -395,7 +395,7 @@ $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi : $(GRUB
 image_grub_mkimage_mbr: $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
 $(GRUB_ASSEMBLE_DIR)/grub.i386-pc : | $(WORKSPACE)
 	mkdir -p "$(GRUB_ASSEMBLE_DIR)"
-	grub-mkimage --prefix "(hd0,msdos1)/boot/grub" \
+	grub-mkimage --prefix "(hd0,msdos1)/grub" \
                 --output "$@" --format "i386-pc" \
                 $(IMAGE_GRUB_MBR_MODULES)
 
