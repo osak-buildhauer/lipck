@@ -412,7 +412,8 @@ $(GRUB_ASSEMBLE_DIR)/mbr.img : $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
 	dd if=/usr/lib/grub/i386-pc/boot.img of="$@" bs=446 count=1
 	dd if="$(GRUB_ASSEMBLE_DIR)/grub.i386-pc" of="$@" bs=512 seek=1
 
-image_grub_install:
+#TODO: which file to track here?
+image_grub_install: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi
 	mkdir -p "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)"
 	$(RSYNC) "/usr/lib/grub/x86_64-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	$(RSYNC) "/usr/lib/grub/i386-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
@@ -420,6 +421,17 @@ image_grub_install:
 	$(RSYNC) "/usr/share/grub/themes" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	mkdir -p "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/fonts"
 	$(RSYNC) "/usr/share/grub/unicode.pf2" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/fonts/"
+	#copy efi core files; note that the x64 binary is named grub.efi because grubx64.efi
+	#is occupied by the ubuntu secure boot grub. Furthermore, place a copy in efi/grub
+	#to serve compatibillity with the lipstick grub.cfg
+	#TODO clean up this clutter...
+	mkdir -p "$(IMAGE_DIR)/efi/boot"
+	mkdir -p "$(IMAGE_DIR)/efi/grub"
+	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grub.efi"
+	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grubx64.efi"
+	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/grubia32.efi"
+	#our i386 efi bootloader shall be the default:
+	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/bootia32.efi"
 
 image_assemble: $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
