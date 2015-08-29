@@ -427,11 +427,11 @@ image_grub_install: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/gr
 	#TODO clean up this clutter...
 	mkdir -p "$(IMAGE_DIR)/efi/boot"
 	mkdir -p "$(IMAGE_DIR)/efi/grub"
-	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grub.efi"
-	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grubx64.efi"
-	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/grubia32.efi"
+	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grub.efi"
+	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/grub/grubx64.efi"
+	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/grubia32.efi"
 	#our i386 efi bootloader shall be the default:
-	$(RSYNC) "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/bootia32.efi"
+	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/bootia32.efi"
 
 image_assemble: $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
