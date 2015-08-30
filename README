@@ -13,10 +13,3 @@ in hope that they will be useful for someone else as well.
 
 This project is licensed under the terms of the GPLv3 license which you can
 find in the COPYING file.
-
-This repository also contains a binary template for USB installation media
-that contains a preinstalled copy of GNU GRUB2. GRUB2 is licensed under
-the terms of the GPLv3.
-You can find the GRUB2 souces under <https://www.gnu.org/software/grub/>.
-
-
