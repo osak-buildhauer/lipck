@@ -554,7 +554,7 @@ repo: repo_packages repo_package_info repo_metadata
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
 	echo "#see $(CONFIG_FILE_DEFAULTS) for default values." > "$(CONFIG_FILE)"
-	echo -e -n "$(foreach option,$(CONFIGURABLE),$(option)=$($(option))\n)" | tr -d "[:blank:]" >> "$(CONFIG_FILE)"
+	echo -e -n "$(foreach option,$(CONFIGURABLE),$(option)=$(strip $($(option)))\n)" >> "$(CONFIG_FILE)"
 
 config_clean:
 	$(RM) $(CONFIG_FILE)
