@@ -455,6 +455,24 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg : | $(WORKSPACE)
 
 image : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 
+#The following target is not used by lipck itself. It may be used to create
+#an empty (only the bootloader will be installed) manually. In particular,
+#it can be used to test the image creation process of lipck (it is not
+#necessary to remaster an image to test this crucial base part).
+multiboot :
+	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" image_skel_file
+	mkdir -p "$(WORKSPACE)/multiboot.work"
+	mount "$(WORKSPACE)/multiboot.part" "$(WORKSPACE)/multiboot.work"
+	$(MAKE) "IMAGE_DIR=$(WORKSPACE)/multiboot.work" image_grub_install \
+		|| (umount "$(WORKSPACE)/multiboot.work" && exit 1)
+	#since this is most likely a standalone image make the lipck grubx64 the
+	#default bootloader for 64bit efi systems
+	mv "$(WORKSPACE)/multiboot.work/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
+		|| (umount "$(WORKSPACE)/multiboot.work" && exit 1)
+	umount "$(WORKSPACE)/multiboot.work"
+	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_FILE=MultiBoot.img \
+		image_assemble
+
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
 $(call gentargets,/gparted-live.iso) :
 	wget -O "$@" "$(GPARTED_BASE_URL)/gparted-live-$(GPARTED_VERSION)-$(subst $(SECONDARY_ARCH),i686-pae,$(subst $(PRIMARY_ARCH),amd64,$*)).iso"
