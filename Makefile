@@ -453,6 +453,12 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg : | $(WORKSPACE)
 	echo "set lip_release=\"$(ISO_RELEASE)\"" >> "$@"
 	echo "set lip_extra_info=\"$(IMAGE_EXTRA_INFO)\"" >> "$@"
 
+image_mount_if : $(IMAGE_PART_FILE)
+	findmnt --target "$(IMAGE_DIR)" || mount "$(IMAGE_PART_FILE)" "$(IMAGE_DIR)"
+
+image_umount :
+	umount -d "$(IMAGE_DIR)"
+
 image : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 
 #The following target is not used by lipck itself. It may be used to create
