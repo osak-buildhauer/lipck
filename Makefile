@@ -455,7 +455,8 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg : | $(WORKSPACE)
 
 image_mount_if : $(IMAGE_PART_FILE)
 	mkdir -p "$(IMAGE_DIR)"
-	findmnt --target "$(IMAGE_DIR)" || mount "$(IMAGE_PART_FILE)" "$(IMAGE_DIR)"
+	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" = "$(IMAGE_DIR)" ] \
+		|| mount "$(IMAGE_PART_FILE)" "$(IMAGE_DIR)"
 
 image_umount :
 	umount -d "$(IMAGE_DIR)"
