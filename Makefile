@@ -567,15 +567,19 @@ help:
 	@echo "Workspace: $(WORKSPACE)"
 	@echo "You may specify the Architecture by setting ARCH="
 	@echo
-	@echo "=== How to run lipck ==="
-	@echo "0. Run make config as user e.g. \"\$$ make WORKSPACE=/media/drivewithspace config\"."
-	@echo "1. Optional: Run \"make image_skel_file\" to obtain an empty image file."
-	@echo "   You may specify the target file with IMAGE_FILE="
-	@echo "2. Run make image as root \"# make image\"."
-	@echo "   If you have mounted an image/partition (e.g. an empty image created in 1.) set IMAGE_DIR to the mount point,"
-	@echo "   (e.g. \"# make IMAGE_DIR=/your/mountpoint image\") to update it."
+	@echo "=== Example run of lipck ==="
+	@echo "\$$ make WORKSPACE=/media/drivewithspace config #configure lipck"
+	@echo "# make image_mount_if #create and mount a partition"
+	@echo "# make image_grub_install #install grub files"
+	@echo "# make image #main remaster process (requires several cups of coffee)"
+	@echo "# make image_umount #umount the image partition"
+	@echo "\$$ #copy mbr+partition to final destination"
+	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_assemble"
+	@echo "\$$ make /somewhere/myfinalimage.vmdk #(optionally) create a vmdk version"
 	@echo
 	@echo "There is a list of all phony targets available under \"make listall\""
+	@echo "A list of all config options may be found in:"
+	@echo "    $(CONFIG_FILE_DEFAULTS)"
 
 listall:
 	@echo "Available targets: "
