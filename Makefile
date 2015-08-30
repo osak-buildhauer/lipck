@@ -572,7 +572,7 @@ help:
 	@echo "# make image_mount_if #create and mount a partition"
 	@echo "# make image_grub_install #install grub files"
 	@echo "# make image #main remaster process (requires several cups of coffee)"
-	@echo "# make repo #build offline repo
+	@echo "# make repo #build offline repo"
 	@echo "# make image_umount #umount the image partition"
 	@echo "\$$ #copy mbr+partition to final destination"
 	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_assemble"
