@@ -579,6 +579,6 @@ INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean
 APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
 IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_grub_mbr_template image_grub_install image_clean
-COMMON_PHONY=help workspace config config_clean clean_really_all
+COMMON_PHONY=help workspace config multiboot config_clean clean_really_all
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
