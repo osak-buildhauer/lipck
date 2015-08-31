@@ -48,6 +48,37 @@ define to_arch =
 $(if $(subst amd64,,$1),$(if $(subst i386,,$1),$1,i686),x86_64)
 endef
 
+#Some targets require the image partition to be mounted.
+#Although, it is easy to detect this (and mount the partition)
+#by depending on the phony target image_mount_if, make is unable
+#to calculate the dependencies correctly. The reason is that some
+#dependencies are located on the partition (which is not mounted
+#when scanning for dependencies). Hence, make will rebuild all
+#targets (after it mounted the partition) regardless of the state
+#of these files.
+#
+#To solve this issue we call ensure_mount on phony targets invoked
+#by the user. The actual target will serve as a wrapper which
+#mounts the partition and then invokes the actual target renamed
+#to <name>__ignore_mount. Note that both targets will be marked
+#as phony, since the renaming makes no sense for files (and most
+#probably this is a file on the partition anyway...) and the user
+#will invoke a phony target anyway.
+#
+#tl;dr every target that requires the image partition to be mounted
+#should be encapsulated in $(call ensure_mount,<target_name>).
+#
+#Finally, do not change _any_ whitespaces in the defintion of
+#ensure_mount without knowing exactly what you are doing. This is
+#dark magic!
+define ensure_mount =
+$(eval
+.PHONY : $(strip $1) $(strip $1)__ignore_mount
+$(strip $1): image_mount_if
+	$(MAKE) $(strip $1)__ignore_mount
+)$(strip $1)__ignore_mount
+endef
+
 RSYNC=rsync -a
 LZMA_FLAGS=-T 0
 
