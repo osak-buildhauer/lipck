@@ -624,9 +624,9 @@ help:
 	@echo "# make image #main remaster process (requires several cups of coffee)"
 	@echo "# make repo #build offline repo"
 	@echo "\$$ #copy mbr+partition to final destination"
-	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy"
+	@echo "# make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy"
 	@echo "\$$ #(optionally) create a vmdk version. Note that IMAGE_FILE is still the raw .img file here!"
-	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy_vmdk"
+	@echo "# make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy_vmdk"
 	@echo
 	@echo "There is a list of all phony targets available under \"make listall\""
 	@echo "A list of all config options may be found in:"
