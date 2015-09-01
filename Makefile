@@ -523,7 +523,8 @@ multiboot :
 		|| (umount -d "$(WORKSPACE)/multiboot.work" && exit 1)
 	#since this is most likely a standalone image make the lipck grubx64 the
 	#default bootloader for 64bit efi systems
-	mv "$(WORKSPACE)/multiboot.work/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
+	[ -e "$(WORKSPACE)/multiboot.work/efi/boot/bootx64.efi" ] \
+		|| mv "$(WORKSPACE)/multiboot.work/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
 		|| (umount -d "$(WORKSPACE)/multiboot.work" && exit 1)
 	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_FILE=MultiBoot.img \
 		"IMAGE_DIR=$(WORKSPACE)/multiboot.work" \
