@@ -502,7 +502,8 @@ image : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 #it can be used to test the image creation process of lipck (it is not
 #necessary to remaster an image to test this crucial base part).
 multiboot :
-	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" image_skel_file
+	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_PART_LABEL=MultiBoot \
+		image_skel_file
 	mkdir -p "$(WORKSPACE)/multiboot.work"
 	mount "$(WORKSPACE)/multiboot.part" "$(WORKSPACE)/multiboot.work"
 	$(MAKE) "IMAGE_DIR=$(WORKSPACE)/multiboot.work" image_grub_install \
@@ -511,7 +512,7 @@ multiboot :
 	#default bootloader for 64bit efi systems
 	mv "$(WORKSPACE)/multiboot.work/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
 		|| (umount "$(WORKSPACE)/multiboot.work" && exit 1)
-	umount "$(WORKSPACE)/multiboot.work"
+	umount -d "$(WORKSPACE)/multiboot.work"
 	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_FILE=MultiBoot.img \
 		image_assemble
 
