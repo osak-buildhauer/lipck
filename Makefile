@@ -470,6 +470,9 @@ $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
 	@echo
 	@echo "Image is ready: $@"
 
+image_deploy: $(IMAGE_FILE) $(IMAGE_FILE).sha1sum
+image_deploy_vmdk: $(IMAGE_FILE:.img=.vmdk) $(IMAGE_FILE:.img=.vmdk).sha1sum
+
 image_clean:
 	$(RM) "$(IMAGE_PART_FILE)"
 	$(RM) -r "$(GRUB_ASSEMBLE_DIR)"
@@ -593,6 +596,9 @@ config_clean:
 %.vmdk : %.img
 	vboxmanage convertfromraw --format vmdk "$<" "$@"
 
+%.sha1sum : %
+	sha1sum "$<" > "$@"
+
 help:
 	@echo "Defaul Architecture: $(ARCH) ($(call altarch,$(ARCH)))"
 	@echo "Workspace: $(WORKSPACE)"
@@ -606,8 +612,9 @@ help:
 	@echo "# make repo #build offline repo"
 	@echo "# make image_umount #umount the image partition"
 	@echo "\$$ #copy mbr+partition to final destination"
-	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_assemble"
-	@echo "\$$ make /somewhere/myfinalimage.vmdk #(optionally) create a vmdk version"
+	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy"
+	@echo "\$$ #(optionally) create a vmdk version. Note that IMAGE_FILE is still the raw .img file here!"
+	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy_vmdk"
 	@echo
 	@echo "There is a list of all phony targets available under \"make listall\""
 	@echo "A list of all config options may be found in:"
