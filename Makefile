@@ -412,7 +412,7 @@ image_remaster $(IMAGE_DIR)/.remastered: $(IMAGE_DIR)/.lipbinaries
 	$(call patch_all,$(CURDIR)/patches/iso/,$(IMAGE_DIR))
 	touch "$(IMAGE_DIR)/.remastered"
 
-image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg
+image_content: image_git_pull $(IMAGE_DIR)/.remastered $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub
 	@echo
 	@echo "Image content is ready: $(IMAGE_DIR)"
 
@@ -443,8 +443,8 @@ $(GRUB_ASSEMBLE_DIR)/mbr.img : $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
 	dd if=/usr/lib/grub/i386-pc/boot.img of="$@" bs=446 count=1
 	dd if="$(GRUB_ASSEMBLE_DIR)/grub.i386-pc" of="$@" bs=512 seek=1
 
-#TODO: which file to track here?
-image_grub_install: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi
+image_grub_install: $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub
+$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi
 	mkdir -p "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)"
 	$(RSYNC) "/usr/lib/grub/x86_64-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	$(RSYNC) "/usr/lib/grub/i386-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
@@ -458,6 +458,7 @@ image_grub_install: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/gr
 	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi" "$(IMAGE_DIR)/efi/boot/grubx64-unsigned.efi"
 	#our i386 efi bootloader shall be the default:
 	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/bootia32.efi"
+	touch "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub"
 
 image_assemble: $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
@@ -608,7 +609,6 @@ help:
 	@echo "=== Example run of lipck ==="
 	@echo "\$$ make WORKSPACE=/media/drivewithspace config #configure lipck"
 	@echo "# make image_mount_if #create and mount a partition"
-	@echo "# make image_grub_install #install grub files"
 	@echo "# make image #main remaster process (requires several cups of coffee)"
 	@echo "# make repo #build offline repo"
 	@echo "# make image_umount #umount the image partition"
