@@ -516,18 +516,17 @@ $(call ensure_mount,image) : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 #it can be used to test the image creation process of lipck (it is not
 #necessary to remaster an image to test this crucial base part).
 multiboot :
-	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_PART_LABEL=MultiBoot \
-		image_skel_file
 	mkdir -p "$(WORKSPACE)/multiboot.work"
-	mount "$(WORKSPACE)/multiboot.part" "$(WORKSPACE)/multiboot.work"
-	$(MAKE) "IMAGE_DIR=$(WORKSPACE)/multiboot.work" image_grub_install__ignore_mount \
-		|| (umount "$(WORKSPACE)/multiboot.work" && exit 1)
+	$(MAKE) "IMAGE_DIR=$(WORKSPACE)/multiboot.work" "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" \
+		IMAGE_PART_LABEL=MultiBoot \
+		image_grub_install \
+		|| (umount -d "$(WORKSPACE)/multiboot.work" && exit 1)
 	#since this is most likely a standalone image make the lipck grubx64 the
 	#default bootloader for 64bit efi systems
 	mv "$(WORKSPACE)/multiboot.work/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
-		|| (umount "$(WORKSPACE)/multiboot.work" && exit 1)
-	umount -d "$(WORKSPACE)/multiboot.work"
+		|| (umount -d "$(WORKSPACE)/multiboot.work" && exit 1)
 	$(MAKE) "IMAGE_PART_FILE=$(WORKSPACE)/multiboot.part" IMAGE_FILE=MultiBoot.img \
+		"IMAGE_DIR=$(WORKSPACE)/multiboot.work" \
 		image_assemble
 
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
