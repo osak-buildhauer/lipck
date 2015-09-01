@@ -493,8 +493,10 @@ image_mount_if : $(IMAGE_PART_FILE)
 	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" = "$(IMAGE_DIR)" ] \
 		|| mount "$(IMAGE_PART_FILE)" "$(IMAGE_DIR)"
 
-image_umount :
-	umount -d "$(IMAGE_DIR)"
+image_umount_if :
+	#if something is mounted then umount
+	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" != "$(IMAGE_DIR)" ] \
+		|| umount -d "$(IMAGE_DIR)"
 
 image : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
 
