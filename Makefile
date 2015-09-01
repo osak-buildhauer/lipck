@@ -79,6 +79,17 @@ $(strip $1): image_mount_if
 )$(strip $1)__ignore_mount
 endef
 
+#On the other hand, targets operating on the actual image file
+#require that the partition is unmounted. So here we go with an
+#"inverse" of ensure_mount:
+define ensure_unmount =
+$(eval
+.PHONY : $(strip $1) $(strip $1)__ignore_mount
+$(strip $1): image_umount_if
+	$(MAKE) $(strip $1)__ignore_mount
+)$(strip $1)__ignore_mount
+endef
+
 RSYNC=rsync -a
 LZMA_FLAGS=-T 0
 
@@ -361,7 +372,7 @@ initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
 	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma $(LZMA_FLAGS) -z > "$(call archdir,$*)$(INITRD_TARGET)"
 
-clean_really_all: iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both image_clean
+$(call ensure_unmount,clean_really_all): iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both image_clean
 
 $(call ensure_mount,image_git) $(IMAGE_DIR)/.git: |$(WORKSPACE)
 	test ! -e "$(IMAGE_DIR)/.git"
@@ -416,7 +427,7 @@ $(call ensure_mount,image_content): image_git_pull $(IMAGE_DIR)/.remastered $(IM
 	@echo
 	@echo "Image content is ready: $(IMAGE_DIR)"
 
-image_skel_file: $(IMAGE_PART_FILE)
+$(call ensure_unmount,image_skel_file): $(IMAGE_PART_FILE)
 $(IMAGE_PART_FILE):
 	truncate -s "$(IMAGE_PART_SIZE)" "$@"
 	mkfs.vfat -n "$(IMAGE_PART_LABEL)" "$@"
@@ -460,7 +471,7 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $
 	$(RSYNC) --no-p --no-g --no-o "$(GRUB_ASSEMBLE_DIR)/grub.i386-efi" "$(IMAGE_DIR)/efi/boot/bootia32.efi"
 	touch "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub"
 
-image_assemble: $(IMAGE_FILE)
+$(call ensure_unmount,image_assemble): $(IMAGE_FILE)
 $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
 	cp "$(GRUB_ASSEMBLE_DIR)/mbr.img" "$@"
 	ddrescue --output-position=2048s --sparse "$(IMAGE_PART_FILE)" "$@"
@@ -471,10 +482,10 @@ $(IMAGE_FILE): $(IMAGE_PART_FILE) $(GRUB_ASSEMBLE_DIR)/mbr.img
 	@echo
 	@echo "Image is ready: $@"
 
-image_deploy: $(IMAGE_FILE) $(IMAGE_FILE).sha1sum
-image_deploy_vmdk: $(IMAGE_FILE:.img=.vmdk) $(IMAGE_FILE:.img=.vmdk).sha1sum
+$(call ensure_unmount,image_deploy): $(IMAGE_FILE) $(IMAGE_FILE).sha1sum
+$(call ensure_unmount,image_deploy_vmdk): $(IMAGE_FILE:.img=.vmdk) $(IMAGE_FILE:.img=.vmdk).sha1sum
 
-image_clean:
+$(call ensure_unmount,image_clean):
 	$(RM) "$(IMAGE_PART_FILE)"
 	$(RM) -r "$(GRUB_ASSEMBLE_DIR)"
 
@@ -612,7 +623,6 @@ help:
 	@echo "\$$ make WORKSPACE=/media/drivewithspace config #configure lipck"
 	@echo "# make image #main remaster process (requires several cups of coffee)"
 	@echo "# make repo #build offline repo"
-	@echo "# make image_umount #umount the image partition"
 	@echo "\$$ #copy mbr+partition to final destination"
 	@echo "\$$ make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy"
 	@echo "\$$ #(optionally) create a vmdk version. Note that IMAGE_FILE is still the raw .img file here!"
