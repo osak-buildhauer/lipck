@@ -612,7 +612,7 @@ config_clean:
 	vboxmanage convertfromraw --format vmdk "$<" "$@"
 
 %.sha1sum : %
-	sha1sum "$<" > "$@"
+	(cd "$$(dirname "$<")" && sha1sum "$$(basename "$<")") > "$@"
 
 help:
 	@echo "Defaul Architecture: $(ARCH) ($(call altarch,$(ARCH)))"
