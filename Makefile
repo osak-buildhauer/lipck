@@ -435,11 +435,21 @@ $(IMAGE_PART_FILE):
 	@echo
 	@echo "Image partition skeleton is ready: $@"
 
-image_grub_mkimage_efi: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi
-$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi : $(GRUB_ASSEMBLE_DIR)/grub.%-efi : | $(WORKSPACE)
+image_grub_memdisk: $(GRUB_ASSEMBLE_DIR)/memdisk.tar
+$(GRUB_ASSEMBLE_DIR)/memdisk.tar:
 	mkdir -p "$(GRUB_ASSEMBLE_DIR)"
-	grub-mkimage --config "$(CURDIR)/contrib/image/grub_early.cfg" \
+	tar cvf "$@" -C "$(CURDIR)/contrib/image/" "grub_early.cfg"
+
+image_grub_mkimage_efi: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi
+$(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $(GRUB_ASSEMBLE_DIR)/grub.i386-efi : $(GRUB_ASSEMBLE_DIR)/grub.%-efi : $(GRUB_ASSEMBLE_DIR)/memdisk.tar | $(WORKSPACE)
+	mkdir -p "$(GRUB_ASSEMBLE_DIR)"
+	echo "normal (memdisk)/grub_early.cfg" \
+		> "$(GRUB_ASSEMBLE_DIR)/grub_pre_normal.cfg"
+	grub-mkimage  \
+		--memdisk "$(GRUB_ASSEMBLE_DIR)/memdisk.tar" \
 		--output "$@" --format "$*-efi" \
+		--config "$(GRUB_ASSEMBLE_DIR)/grub_pre_normal.cfg" \
+		--prefix "/grub" \
 		$(IMAGE_GRUB_EFI_MODULES)
 
 image_grub_mkimage_mbr: $(GRUB_ASSEMBLE_DIR)/grub.i386-pc
