@@ -44,5 +44,8 @@ swi-prolog
 #Mathematik
 #Singular ist nicht in den Packetquellen :-(
 #Aber wir brauchen Abhängigkeiten
-libntl0
+libntl5
 libcdd0d
+normaliz
+surf-alggeo
+python-polybori

@@ -1,9 +1,23 @@
+#Singular
 #singular
-ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-bin_4.0.2-1_amd64.deb
-ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-bin_4.0.2-1_i386.deb
-ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular-common_4.0.2-1_all.deb
-ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular_4.0.2-1_amd64.deb
-ftp://jim.mathematik.uni-kl.de/repo/ubuntu14/pool/main/s/singular/singular_4.0.2-1_i386.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular_4.0.2+ds-1+b1_amd64.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular_4.0.2+ds-1+b1_i386.deb
+#singular-ui
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-ui_4.0.2+ds-1+b1_amd64.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-ui_4.0.2+ds-1+b1_i386.deb
+#singular-data
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-data_4.0.2+ds-1_all.deb
+#singular-modules
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-modules_4.0.2+ds-1+b1_amd64.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-modules_4.0.2+ds-1+b1_i386.deb
+#singular-doc
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-doc_4.0.2+ds-1_all.deb
+#libsingular4
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/libsingular4_4.0.2+ds-1+b1_amd64.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/libsingular4_4.0.2+ds-1+b1_i386.deb
+#libflint-2.5.2
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/f/flint/libflint-2.5.2_2.5.2-3_amd64.deb
+ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/f/flint/libflint-2.5.2_2.5.2-3_i386.deb
 
 #mainline kernel
 http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.3-rc2-unstable/linux-image-4.3.0-040300rc2-generic_4.3.0-040300rc2.201509201830_amd64.deb

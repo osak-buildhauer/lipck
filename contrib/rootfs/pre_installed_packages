@@ -18,7 +18,6 @@ automake
 cmake
 build-essential
 lvm2
-mencoder
 screen
 tofrodos
 efibootmgr
