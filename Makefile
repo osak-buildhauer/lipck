@@ -91,7 +91,7 @@ $(strip $1): image_umount_if
 endef
 
 RSYNC=rsync -a --inplace --no-whole-file
-LZMA_FLAGS=-T 0
+XZ_LZMA_FLAGS=-T 0
 
 define archdir =
 $(WORKSPACE)/$(call to_arch,$1)
@@ -146,7 +146,7 @@ APT_CACHE_DIR=$(WORKSPACE)/apt_cache
 
 ROOTFS=/rootfs
 INITRD=/initrd
-INITRD_TARGET=/initrd.lz
+INITRD_TARGET=/initrd.xz
 STATE_DIR=/state
 LXC_DIR=/lxc_container
 CHECKSUMS=/rootfs.md5sums
@@ -328,7 +328,7 @@ rootfs_common_clean:
 initrd_unpack : $(ARCH_DIR)$(STATE_DIR)/initrd_extracted
 $(call gentargets,$(STATE_DIR)/initrd_extracted) : $(call archdir,%)$(STATE_DIR)/iso_extracted
 	mkdir -p "$(call archdir,$*)$(INITRD)"
-	cd "$(call archdir,$*)$(INITRD)" && lzma $(LZMA_FLAGS) -d < "$(call archdir,$*)$(INITRD_SOURCE)" | cpio -i
+	cd "$(call archdir,$*)$(INITRD)" && lzma $(XZ_LZMA_FLAGS) -d < "$(call archdir,$*)$(INITRD_SOURCE)" | cpio -i
 	touch "$(call archdir,$*)$(STATE_DIR)/initrd_extracted"
 
 initrd_clean:
@@ -372,7 +372,7 @@ $(call gentargets,$(STATE_DIR)/initrd_remastered) : $(call archdir,%)$(STATE_DIR
 
 initrd_pack : $(ARCH_DIR)$(INITRD_TARGET)
 $(call gentargets,$(INITRD_TARGET)) : $(call archdir,%)$(STATE_DIR)/initrd_remastered
-	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | lzma $(LZMA_FLAGS) -z > "$(call archdir,$*)$(INITRD_TARGET)"
+	cd "$(call archdir,$*)$(INITRD)" && find | cpio -H newc -o | xz $(XZ_LZMA_FLAGS) -z > "$(call archdir,$*)$(INITRD_TARGET)"
 
 $(call ensure_unmount,clean_really_all): iso_clean_both rootfs_clean_both rootfs_common_clean initrd_clean_both image_clean
 
