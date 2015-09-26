@@ -54,7 +54,7 @@
 +            mkdir -p "${overlay_mount_dir}"
 +            mount -t ${UNIONFS} -o "lowerdir=${mounts}" root "${overlay_mount_dir}"
 +            # Stacking multiple overlays leads to "No such device" errors upon access
-+            mount -t ${UNIONFS} -o "lowerdir=${overlay_mount_dir},upperdir=/cow/upper,workdir=/cow/work" cowroot "${rootmnt}"
++            mount -t ${UNIONFS} -o "lowerdir=${mounts}",upperdir=/cow/upper,workdir=/cow/work" cowroot "${rootmnt}"
 +            lower="${overlay_mount_dir}"
              ;;
      esac
