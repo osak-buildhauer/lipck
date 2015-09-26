@@ -90,7 +90,7 @@ $(strip $1): image_umount_if
 )$(strip $1)__ignore_mount
 endef
 
-RSYNC=rsync -a
+RSYNC=rsync -a --inplace --no-whole-file
 LZMA_FLAGS=-T 0
 
 define archdir =
