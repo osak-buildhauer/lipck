@@ -29,7 +29,6 @@ ISO_PATTERN_FLAGS=
 
 APT_SOURCE_URL_OVERRIDE=http://ftp.halifax.rwth-aachen.de/ubuntu/
 
-IMAGE_DIR=$(WORKSPACE)/image_files
 IMAGE_GIT_URL=https://www.fsmpi.rwth-aachen.de/git/lipstick
 IMAGE_GIT_BRANCH=ss15
 IMAGE_EXTRA_INFO=

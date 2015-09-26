@@ -97,6 +97,8 @@ define archdir =
 $(WORKSPACE)/$(call to_arch,$1)
 endef
 
+IMAGE_DIR=$(WORKSPACE)/image_files
+
 ARCH_DIR=$(call archdir,$(ARCH))
 PRIMARY_ARCH_DIR=$(call archdir,$(PRIMARY_ARCH))
 SECONDARY_ARCH_DIR=$(call archdir,$(SECONDARY_ARCH))
@@ -511,12 +513,12 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/lipinfo.cfg : | $(WORKSPACE)
 
 image_mount_if : $(IMAGE_PART_FILE)
 	mkdir -p "$(IMAGE_DIR)"
-	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" = "$(IMAGE_DIR)" ] \
+	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" = "$(shell readlink -f "$(IMAGE_DIR)")" ] \
 		|| mount "$(IMAGE_PART_FILE)" "$(IMAGE_DIR)"
 
 image_umount_if :
 	#if something is mounted then umount
-	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" != "$(IMAGE_DIR)" ] \
+	[ "$$(findmnt --target "$(IMAGE_DIR)" -f -n --output=target)" != "$(shell readlink -f "$(IMAGE_DIR)")" ] \
 		|| umount -d "$(IMAGE_DIR)"
 
 $(call ensure_mount,image) : image_content $(GRUB_ASSEMBLE_DIR)/mbr.img
