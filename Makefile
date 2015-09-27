@@ -239,6 +239,16 @@ ifneq ($(strip $(APT_SOURCE_URL_OVERRIDE)),)
 	echo "deb $(APT_SOURCE_URL_OVERRIDE) $(ISO_RELEASE)-updates main restricted universe multiverse" \
 		>> "$(call archdir,$*)$(ROOTFS)/etc/apt/sources.list"
 endif
+	#set timezone
+	echo -n "Europe/Berlin" > "$(call archdir,$*)$(ROOTFS)/etc/timezone"
+	#install kde defaults
+	mkdir -p "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
+        cp "$(CURDIR)/contrib/rootfs/kde_config/"* "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
+	#install modprobe.d files
+	cp "$(CURDIR)/contrib/rootfs/modprobe.d/"* "$(call archdir,$*)$(ROOTFS)/etc/modprobe.d/"
+	#install sysctl.d files
+	cp "$(CURDIR)/contrib/rootfs/sysctl.d/"* "$(call archdir,$*)$(ROOTFS)/etc/sysctl.d/"
+
 	mkdir -p "$(call archdir,$*)$(LXC_DIR)"
 	lxc-execute --name "lipck_remaster_$*" -P "$(call archdir,$*)$(LXC_DIR)" -f "$(CURDIR)/config/lxc_common.conf" \
 	-s lxc.arch="$*" -s lxc.rootfs="$(call archdir,$*)$(ROOTFS)" \
@@ -274,6 +284,8 @@ $(call gentargets,$(STATE_DIR)/rootfs_finalized) : $(call archdir,%)$(STATE_DIR)
 	$(RM) "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"
 	if [ -e "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak" ]; then mv "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf.bak" "$(call archdir,$*)$(ROOTFS)/etc/resolv.conf"; fi
 	$(RM) -r "$(call archdir,$*)$(ROOTFS)/remaster"
+	#clean up crash reports
+	$(RM) -rf "$(call archdir,$*)$(ROOTFS)/var/crash/"*
 	$(RM) "$(call archdir,$*)$(STATE_DIR)/rootfs_prepared"
 	touch "$(call archdir,$*)$(STATE_DIR)/rootfs_finalized"
 

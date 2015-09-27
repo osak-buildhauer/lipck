@@ -98,31 +98,14 @@ function install_packages()
 
 function finalize()
 {
-	echo -n "Europe/Berlin" > /etc/timezone
-	
-	rm -rf /var/crash/*
+	#update initramfs - both this script and lipck may have changed files
+	#that should be copied over in the initramfs
+	update-initramfs -u
 
 	if [ -z "$LIPCK_HAS_APT_CACHE" ]
 	then
 	  rm -rf /var/cache/apt/*
 	fi
-}
-
-function install_kde_defaults()
-{
-	mkdir -p /etc/skel/.kde/share/config/
-	cp "$CONTRIB_DIR/kde_config/"* /etc/skel/.kde/share/config/
-}
-
-function copy_modprobe_d()
-{
-	cp "$SCRIPT_DIR/contrib/modprobe.d/"* "/etc/modprobe.d/"
-	update-initramfs -u
-}
-
-function copy_sysctl_d()
-{
-	cp "$SCRIPT_DIR/contrib/sysctl.d/"* "/etc/sysctl.d/"
 }
 
 function hold_packages()
@@ -146,11 +129,7 @@ PKGS_TO_HOLD=$(get_packages_from_file "$CONTRIB_DIR/hold_packages")
 hold_packages $PKGS_TO_HOLD
 
 prepare_install
-copy_modprobe_d
-copy_sysctl_d
 install_packages
-
-install_kde_defaults
 
 #i.e. required for applying default-wallpaper patch
 #echo "compiling glib2 schemas..."
