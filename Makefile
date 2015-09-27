@@ -243,7 +243,7 @@ endif
 	echo -n "Europe/Berlin" > "$(call archdir,$*)$(ROOTFS)/etc/timezone"
 	#install kde defaults
 	mkdir -p "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
-        cp "$(CURDIR)/contrib/rootfs/kde_config/"* "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
+	cp "$(CURDIR)/contrib/rootfs/kde_config/"* "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
 	#install modprobe.d files
 	cp "$(CURDIR)/contrib/rootfs/modprobe.d/"* "$(call archdir,$*)$(ROOTFS)/etc/modprobe.d/"
 	#install sysctl.d files
