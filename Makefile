@@ -241,9 +241,8 @@ ifneq ($(strip $(APT_SOURCE_URL_OVERRIDE)),)
 endif
 	#set timezone
 	echo -n "Europe/Berlin" > "$(call archdir,$*)$(ROOTFS)/etc/timezone"
-	#install kde defaults
-	mkdir -p "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
-	cp "$(CURDIR)/contrib/rootfs/kde_config/"* "$(call archdir,$*)$(ROOTFS)/etc/skel/.kde/share/config/"
+	#install skel files (in particular kde defaults)
+	cp -R "$(CURDIR)/contrib/rootfs/skel" "$(call archdir,$*)$(ROOTFS)/etc/"
 	#install modprobe.d files
 	cp "$(CURDIR)/contrib/rootfs/modprobe.d/"* "$(call archdir,$*)$(ROOTFS)/etc/modprobe.d/"
 	#install sysctl.d files
