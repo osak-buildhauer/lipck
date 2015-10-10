@@ -1,0 +1,28 @@
+[KDE Keyboard Layout Switcher]
+_k_friendly_name=KDE Daemon
+
+[kaccess]
+_k_friendly_name=kaccess
+
+[kded5]
+_k_friendly_name=KDE Daemon
+
+[khotkeys]
+_k_friendly_name=KDE Daemon
+{23c97025-1263-45c4-983c-cb20ee1576c4}=Ctrl+Alt+T,none,Terminal#1
+{6cd6feca-204c-4a7b-9422-1c2ba62e4391}=Meta+Return,none,Terminal#2
+
+[kmix]
+_k_friendly_name=Lautstärke
+
+[krunner]
+_k_friendly_name=krunner
+
+[ksmserver]
+_k_friendly_name=ksmserver
+
+[kwin]
+_k_friendly_name=KWin
+
+[plasmashell]
+_k_friendly_name=Plasma
