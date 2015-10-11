@@ -625,6 +625,7 @@ $(IMAGE_DIR)/offline_repo.json: | $(IMAGE_DIR)
 repo_clean:
 	$(RM) -r "$(REPO_DIST_DIR)"
 	$(RM) -r "$(REPO_ARCHIVE_DIR)"
+	$(RM) "$(IMAGE_DIR)/offline_repo.json"
 
 $(call ensure_mount,repo): repo_packages repo_package_info repo_metadata $(IMAGE_DIR)/offline_repo.json
 
