@@ -12,12 +12,13 @@ PACKAGES_KEY = "packages"
 PACKAGE_NAME_KEY = "pkgname"
 PACKAGE_URLS_KEY = "urls"
 
+import codecs
 import json
 import sys
 import os
 
 def packageJsonToSimpleList(filename):
-  file_handle = open(filename, 'r')
+  file_handle = codecs.open(filename, 'r', 'utf-8-sig')
   pkginfo = json.load(file_handle)
 
   for category_name,category in pkginfo.items():
