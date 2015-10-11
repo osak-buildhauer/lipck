@@ -1,5 +1,6 @@
 {
-    "Common": [
+    "Common": {
+      "packages": [
         {
             "pkgname": "gufw",
             "pkgdescription": "Firewall Frontend",
@@ -86,19 +87,71 @@
             "tagged": false
         },
         {
-            "pkgname": "vim",
-            "pkgdescription": "Awsome Texteditor",
-            "tagged": false
+            "pkgname": "linux-image-4.3.0-040300-rc2-generic_4.3.0",
+            "pkgdescription": "Vanilla Linux Kernel",
+            "tagged": false,
+            "urls": [
+              "http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.3-rc2-unstable/linux-image-4.3.0-040300rc2-generic_4.3.0-040300rc2.201509201830_amd64.deb",
+              "http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.3-rc2-unstable/linux-image-4.3.0-040300rc2-generic_4.3.0-040300rc2.201509201830_i386.deb"
+            ]
         }
-    ],
-    "Mathematik": [
+      ]
+    },
+    "Mathematik": {
+      "packages": [
         {
             "pkgname": "singular",
             "pkgdescription": "Tool für die Vorlesung Computeralgebra",
-            "tagged": true
+            "tagged": true,
+            "urls": [
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular_4.0.2+ds-1+b1_amd64.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular_4.0.2+ds-1+b1_i386.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-ui_4.0.2+ds-1+b1_amd64.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-ui_4.0.2+ds-1+b1_i386.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-data_4.0.2+ds-1_all.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-modules_4.0.2+ds-1+b1_amd64.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-modules_4.0.2+ds-1+b1_i386.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/singular-doc_4.0.2+ds-1_all.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/libsingular4_4.0.2+ds-1+b1_amd64.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/s/singular/libsingular4_4.0.2+ds-1+b1_i386.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/f/flint/libflint-2.5.2_2.5.2-3_amd64.deb",
+              "ftp://ftp.halifax.rwth-aachen.de/debian/pool/main/f/flint/libflint-2.5.2_2.5.2-3_i386.deb"
+            ]
+        },
+        {
+            "pkgname": "libntl5",
+            "pkgdescription": "Abhängigkeit von Singular",
+            "tagged" : false,
+            "hidden" : true
+        },
+        {
+            "pkgname": "libcdd0d",
+            "pkgdescription": "Abhängigkeit von Singular",
+            "tagged" : false,
+            "hidden" : true
+        },
+        {
+            "pkgname": "normaliz",
+            "pkgdescription": "Abhängigkeit von Singular",
+            "tagged" : false,
+            "hidden" : true
+        },
+        {
+            "pkgname": "surf-alggeo",
+            "pkgdescription": "Abhängigkeit von Singular",
+            "tagged" : false,
+            "hidden" : true
+        },
+        {
+            "pkgname": "python-polybori",
+            "pkgdescription": "Abhängigkeit von Singular",
+            "tagged" : false,
+            "hidden" : true
         }
-    ],
-    "Physik": [
+      ]
+    },
+    "Physik": {
+      "packages": [
         {
             "pkgname": "python-numpy",
             "pkgdescription": "Numeric Bibiliothek für Python",
@@ -135,7 +188,7 @@
             "tagged": true
         },
         {
-            "pkgname": "root",
+            "pkgname": "root-system",
             "pkgdescription": "Datenanalyse Framework vom CERN",
             "tagged": true
         },
@@ -149,8 +202,10 @@
             "pkgdescription": "Python IDE (die, die in Anaconda benutzt wird)",
             "tagged": true
         }
-    ],
-    "Informatik": [
+      ]
+    },
+    "Informatik": {
+      "packages": [
         {
             "pkgname": "postgresql",
             "pkgdescription": "Datenbank-Server. Nett um in der Datenbanken-Vorlesungen Dinge auszuprobieren",
@@ -176,5 +231,6 @@
             "pkgdescription": "Prolog Interpreter/Compiler für die Vorlesung Programmierung",
             "tagged": true
         }
-    ]
+      ]
+    }
 }
