@@ -618,11 +618,15 @@ $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_A
 	echo "Description: Ubuntu $(ISO_RELEASE) $(shell echo $(ISO_VERSION) | cut -f-2 -d'.')" \
 		>> "$(REPO_ARCHIVE_DIR)"/Release
 
+$(call ensure_mount,repo_offline_repo_json) : $(IMAGE_DIR)/offline_repo.json
+$(IMAGE_DIR)/offline_repo.json: | $(IMAGE_DIR)
+	cp "$(CURDIR)/contrib/rootfs/offline_repo.json" "$(IMAGE_DIR)/"
+
 repo_clean:
 	$(RM) -r "$(REPO_DIST_DIR)"
 	$(RM) -r "$(REPO_ARCHIVE_DIR)"
 
-$(call ensure_mount,repo): repo_packages repo_package_info repo_metadata
+$(call ensure_mount,repo): repo_packages repo_package_info repo_metadata $(IMAGE_DIR)/offline_repo.json
 
 config $(CONFIG_FILE):
 	@echo "Generating configuration $(CONFIG_FILE)"
@@ -664,7 +668,7 @@ ISO_PHONY=iso_download iso_content iso_clean iso_clean_both
 ROOTFS_PHONY=rootfs_unsquash rootfs_prepare rootfs_remaster rootfs_finalize rootfs_checksums rootfs_deduplicate rootfs_squash rootfs_console rootfs_clean rootfs_common_clean rootfs_clean_both
 INITRD_PHONY=initrd_unpack initrd_remaster initrd_pack initrd_clean initrd_clean_both
 APT_CACHE_PHONY=apt_cache apt_cache_clean
-REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean
+REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean repo_offline_repo_json
 IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_grub_mbr_template image_grub_install image_umount image_mount_if image_clean
 COMMON_PHONY=help workspace config multiboot config_clean clean_really_all
 
