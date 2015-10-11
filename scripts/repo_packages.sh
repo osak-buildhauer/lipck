@@ -41,7 +41,7 @@ if [ ! -d "$SCRIPT_DIR" ]; then
 fi
 
 #all packages that do not have an urls field (and thus, should be resolved using apt)
-PKG_LIST=$("$SCRIPT_DIR/read_packages.py" "$CONTRIB_DIR/offline_repo.json" | grep -E "^[^[:space:]]+$" | tr "\n" " ")
+PKG_LIST=$("$SCRIPT_DIR/scripts/read_packages.py" "$CONTRIB_DIR/offline_repo.json" | grep -E "^[^[:space:]]+$" | tr "\n" " ")
 
 PKG_DESTINATION=$DESTINATION/archives
 
@@ -62,7 +62,7 @@ PKG_URLS=$(apt-get install --reinstall --print-uris -qq $PKG_LIST | cut -d"'" -f
 
 echo "package urls:"
 echo "$PKG_URLS"
-PKG_URLS="$PKG_URLS $("$SCRIPT_DIR/read_packages.py" "$CONTRIB_DIR/offline_repo.json" | cut -f2- -s -d" " | tr "\n" " ")"
+PKG_URLS="$PKG_URLS $("$SCRIPT_DIR/scripts/read_packages.py" "$CONTRIB_DIR/offline_repo.json" | cut -f2- -s -d" " | tr "\n" " ")"
 
 echo "downloading archives. this may take some time..."
 wget -nc -P $PKG_DESTINATION $PKG_URLS
