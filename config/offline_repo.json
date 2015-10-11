@@ -1,0 +1,180 @@
+{
+    "Common": [
+        {
+            "pkgname": "gufw",
+            "pkgdescription": "Firewall Frontend",
+            "tagged": true
+        },
+        {
+            "pkgname": "pwgen",
+            "pkgdescription": "Tool um Passwoerter zu generieren",
+            "tagged": true
+        },
+        {
+            "pkgname": "inkscape",
+            "pkgdescription": "Bildbearbeitung (Vektorbasiert)",
+            "tagged": true
+        },
+        {
+            "pkgname": "gimp",
+            "pkgdescription": "Bildbearbeitung (Pixelbasiert)",
+            "tagged": true
+        },
+        {
+            "pkgname": "subversion",
+            "pkgdescription": "Versionsverwaltungstool (zentral)",
+            "tagged": false
+        },
+        {
+            "pkgname": "graphviz",
+            "pkgdescription": "Tool zum visualisieren von Graphen",
+            "tagged": true
+        },
+        {
+            "pkgname": "gnome",
+            "pkgdescription": "GNOME3 Desktop Umgebung",
+            "tagged": false
+        },
+        {
+            "pkgname": "xubuntu-desktop",
+            "pkgdescription": "Xubuntu Desktop Umgebung und standard Programme",
+            "tagged": false
+        },
+        {
+            "pkgname": "fityk",
+            "pkgdescription": "Tool zum Daten-Fitting und Analyse",
+            "tagged": false
+        },
+        {
+            "pkgname": "openssh-server",
+            "pkgdescription": "SSH-Server (s. KISS)",
+            "tagged": false
+        },
+        {
+            "pkgname": "linux-firmware-nonfree",
+            "pkgdescription": "roperitäre Firmware für exotische Notebooks/Hardware",
+            "tagged": false
+        },
+        {
+            "pkgname": "zsh",
+            "pkgdescription": "Alternative Shell",
+            "tagged": false
+        },
+        {
+            "pkgname": "zsh-doc",
+            "pkgdescription": "Dokumentation von zsh",
+            "tagged": false
+        },
+        {
+            "pkgname": "lftp",
+            "pkgdescription": "FTP-Client",
+            "tagged": false
+        },
+        {
+            "pkgname": "gddrescue",
+            "pkgdescription": "Falls Daten gelöscht, letzte Option vor dem Tod der Hoffnung",
+            "tagged": false
+        },
+        {
+            "pkgname": "liblapack-dev",
+            "pkgdescription": "LAPACK ist eine Standard-Numerik-Bibliothek für Physiker und Numeriker",
+            "tagged": false
+        },
+        {
+            "pkgname": "liblapack-doc",
+            "pkgdescription": "LAPACK Dokumentation (s. oben)",
+            "tagged": false
+        },
+        {
+            "pkgname": "vim",
+            "pkgdescription": "Awsome Texteditor",
+            "tagged": false
+        }
+    ],
+    "Mathematik": [
+        {
+            "pkgname": "singular",
+            "pkgdescription": "Tool für die Vorlesung Computeralgebra",
+            "tagged": true
+        }
+    ],
+    "Physik": [
+        {
+            "pkgname": "python-numpy",
+            "pkgdescription": "Numeric Bibiliothek für Python",
+            "tagged": true
+        },
+        {
+            "pkgname": "python-simpy",
+            "pkgdescription": "Simulationsframework für Python",
+            "tagged": true
+        },
+        {
+            "pkgname": "python-scipy",
+            "pkgdescription": "Bibliothek für scientific computing",
+            "tagged": true
+        },
+        {
+            "pkgname": "python-matplotlib",
+            "pkgdescription": "Schnittstelle zum Plotten mit Python",
+            "tagged": true
+        },
+        {
+            "pkgname": "ipython",
+            "pkgdescription": "Interaktiver Python Interpreter mit Tab-Vervollständgung",
+            "tagged": true
+        },
+        {
+            "pkgname": "gnuplot",
+            "pkgdescription": "Programm um Funktions- und Datenplots anzufertigen",
+            "tagged": true
+        },
+        {
+            "pkgname": "wxmaxima",
+            "pkgdescription": "Graphische Benutzeroberfläche für das Maxima Computer Algebra System",
+            "tagged": true
+        },
+        {
+            "pkgname": "root",
+            "pkgdescription": "Datenanalyse Framework vom CERN",
+            "tagged": true
+        },
+        {
+            "pkgname": "bpython",
+            "pkgdescription": "Ein weiterer interaktiver Python Interpreter",
+            "tagged": true
+        },
+        {
+            "pkgname": "spyder",
+            "pkgdescription": "Python IDE (die, die in Anaconda benutzt wird)",
+            "tagged": true
+        }
+    ],
+    "Informatik": [
+        {
+            "pkgname": "postgresql",
+            "pkgdescription": "Datenbank-Server. Nett um in der Datenbanken-Vorlesungen Dinge auszuprobieren",
+            "tagged": false
+        },
+        {
+            "pkgname": "dia",
+            "pkgdescription": "Graphisches Tool, um UML/ER Diagramme für die Vorlesungen Softwaretechnik und Datenbanken anzufertigenGraphisches Tool, um UML/ER Diagramme für die Vorlesungen Softwaretechnik und Datenbanken anzufertigen",
+            "tagged": true
+        },
+        {
+            "pkgname": "ghc",
+            "pkgdescription": "Glaskow Haskell Compiler für die Vorlesung Programmierung",
+            "tagged": true
+        },
+        {
+            "pkgname": "default-jdk",
+            "pkgdescription": "Java JDK für die Vorlesung Programmierung",
+            "tagged": true
+        },
+        {
+            "pkgname": "swi-prolog",
+            "pkgdescription": "Prolog Interpreter/Compiler für die Vorlesung Programmierung",
+            "tagged": true
+        }
+    ]
+}
