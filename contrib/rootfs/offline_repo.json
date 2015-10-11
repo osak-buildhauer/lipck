@@ -53,7 +53,7 @@
         },
         {
             "pkgname": "linux-firmware-nonfree",
-            "pkgdescription": "roperitäre Firmware für exotische Notebooks/Hardware",
+            "pkgdescription": "Properitäre Firmware für exotische Notebooks/Hardware",
             "tagged": false
         },
         {
@@ -213,7 +213,7 @@
         },
         {
             "pkgname": "dia",
-            "pkgdescription": "Graphisches Tool, um UML/ER Diagramme für die Vorlesungen Softwaretechnik und Datenbanken anzufertigenGraphisches Tool, um UML/ER Diagramme für die Vorlesungen Softwaretechnik und Datenbanken anzufertigen",
+            "pkgdescription": "Graphisches Tool, um UML/ER Diagramme für die Vorlesungen Softwaretechnik und Datenbanken anzufertigen",
             "tagged": true
         },
         {
