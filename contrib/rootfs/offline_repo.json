@@ -87,6 +87,11 @@
             "tagged": false
         },
         {
+            "pkgname": "x2goclient",
+            "pkgdescription": "Remote Desktop Client (z.B. für den RBI-Pool",
+            "tagged": true
+        },
+        {
             "pkgname": "linux-image-4.3.0-040300-rc2-generic_4.3.0",
             "pkgdescription": "Vanilla Linux Kernel",
             "tagged": false,
