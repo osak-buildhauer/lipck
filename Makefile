@@ -599,6 +599,7 @@ $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST
 $(call ensure_mount,repo_metadata) : $(REPO_ARCHIVE_DIR)/Release
 $(REPO_ARCHIVE_DIR)/Release : $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST_DIR)/binary-$(call altarch,$(SECONDARY_ARCH))/Packages.bz2
 	mkdir -p "$(REPO_ARCHIVE_DIR)"
+	touch "$(REPO_ARCHIVE_DIR)"/.aptignr
 
 	echo "Origin: Ubuntu" > "$(REPO_ARCHIVE_DIR)"/Release
 	echo "Label: LIP Ubuntu Extra Packages" \
