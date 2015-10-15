@@ -177,9 +177,14 @@
             "pkgdescription": "Schnittstelle zum Plotten mit Python",
             "tagged": true
         },
-        {
+         {
             "pkgname": "ipython",
             "pkgdescription": "Interaktiver Python Interpreter mit Tab-Vervollständgung",
+            "tagged": true
+        },
+        {
+            "pkgname": "ipython3",
+            "pkgdescription": "Interaktiver Python3 Interpreter mit Tab-Vervollständgung",
             "tagged": true
         },
         {
