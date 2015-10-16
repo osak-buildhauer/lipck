@@ -92,7 +92,7 @@
             "tagged": true
         },
         {
-            "pkgname": "linux-image-4.3.0-040300rc5-generic_4.3.0",
+            "pkgname": "linux-image-4.3.0-040300rc5-generic",
             "pkgdescription": "Vanilla Linux Kernel",
             "tagged": false,
             "urls": [
@@ -101,7 +101,7 @@
             ]
         },
         {
-            "pkgname": "linux-headers-4.3.0-040300rc5-generic_4.3.0",
+            "pkgname": "linux-headers-4.3.0-040300rc5-generic",
             "pkgdescription": "Vanilla Linux Kernel Headers",
             "tagged": false,
             "urls": [
