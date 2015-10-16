@@ -308,9 +308,8 @@ $(call gentargets,$(CHECKSUMS)) : $(call archdir,%)$(STATE_DIR)/rootfs_remastere
 
 rootfs_fssize: $(ARCH_DIR)/filesystem.size
 $(call gentargets,/filesystem.size) : $(call archdir,%)$(STATE_DIR)/rootfs_remastered
-	IN_BYTES=$$(du -s "$(call archdir,$*)$(ROOTFS)"|cut -f1) && \
-	IN_SECTORS=$$(($$IN_BYTES * 512)) && \
-	echo $$IN_SECTORS > $(call archdir,$*)/filesystem.size
+	IN_BYTES=$$(du -sx --block-size=1 "$(call archdir,$*)$(ROOTFS)"|cut -f1) && \
+	echo $$IN_BYTES > $(call archdir,$*)/filesystem.size
 
 rootfs_deduplicate $(COMMON_DIR)$(STATE_DIR)/rootfs_deduplicated: $(PRIMARY_ARCH_DIR)$(CHECKSUMS) $(SECONDARY_ARCH_DIR)$(CHECKSUMS)
 	mkdir -p "$(COMMON_DIR)$(STATE_DIR)"
