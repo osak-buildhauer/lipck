@@ -139,7 +139,7 @@ GPARTED_BASE_URL=http://sourceforge.net/projects/gparted/files/gparted-live-stab
 
 #applies all patches in $1 to target directory $2
 define patch_all =
-$(foreach p,$(wildcard $1/*),@echo "Applying \"$1\" to \"$2\":" && \
+$(foreach p,$(wildcard $1/*),echo "Applying \"$1\" to \"$2\":" && \
 	cat "$p" | patch -d"$2" -p1 && echo "done." && ) true
 endef
 
