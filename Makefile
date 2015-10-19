@@ -110,7 +110,11 @@ endef
 
 ISO_IMAGE_DEST=/iso
 ISO_IMAGE=$(ISO_IMAGE_DEST)/image.iso
-ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
+ifneq (,$(findstring url-no-release,$(ISO_PATTERN_FLAGS)))
+  ISO_URL=$(ISO_BASE_URL)/$(ISO_CHANNEL)
+else
+  ISO_URL=$(ISO_BASE_URL)/$(ISO_RELEASE)/$(ISO_CHANNEL)
+endif
 ISO_CONTENT=$(ISO_IMAGE_DEST)/content
 
 IMAGE_PART_FILE=$(WORKSPACE)/image.img.part
