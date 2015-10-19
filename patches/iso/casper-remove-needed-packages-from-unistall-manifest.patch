@@ -9,7 +9,7 @@
  liblua5.2-0:amd64
  liblvm2cmd2.02:amd64
  libnss3-1d:amd64
-@@ -53,10 +51,8 @@
+@@ -53,10 +51,7 @@
  libpresage1:amd64
  libreadline5:amd64
  libtinyxml2.6.2v5:amd64
