@@ -1,0 +1,14 @@
+WORKSPACE=/workspace
+PRIMARY_ARCH=x86_64
+SECONDARY_ARCH=i686
+ISO_BASE_URL=http://cdimage.ubuntu.com/kubuntu/
+ISO_RELEASE=wily
+ISO_CHANNEL=daily-live/current
+ISO_VERSION=15.10
+ISO_FLAVOR=kubuntu
+ISO_PATTERN_FLAGS=release-prefix url-no-release
+IMAGE_GIT_URL=https://git.fsmpi.rwth-aachen.de/osak/lipstick.git
+IMAGE_GIT_BRANCH=ws15
+IMAGE_EXTRA_INFO=
+IMAGE_PART_SIZE=6G
+IMAGE_PART_LABEL=LIPStick
