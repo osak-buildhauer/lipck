@@ -557,6 +557,37 @@ multiboot :
 		"IMAGE_DIR=$(WORKSPACE)/multiboot.work" \
 		image_assemble
 
+VOID_LINUX_DIR=$(WORKSPACE)/voidlinux
+VOID_LINUX_PART_FILE=$(VOID_LINUX_DIR)/void_linux.part
+VOID_LINUX_PART_DIR=$(VOID_LINUX_DIR)/partition_files
+VOID_LINUX_ISO=$(VOID_LINUX_DIR)/voidlinux.iso
+VOID_LINUX_ISO_DIR=$(VOID_LINUX_DIR)/iso_files
+#the partition label is used by the initrd and the grub to find the boot partition
+VOID_LINUX_PART_LABEL=VOID_LIVE
+VOID_LINUX_PART_SIZE=512M
+VOID_LINUX_IMAGE=$(CURRENT_DIR)/voidlinux.img
+multiboot_voidlinux : $(VOID_LINUX_IMAGE)
+$(VOID_LINUX_IMAGE): $(VOID_LINUX_ISO)
+	mkdir -p "$(VOID_LINUX_ISO_DIR)/"
+	7z x -o"$(VOID_LINUX_ISO_DIR)" -aos "$<"
+	mkdir -p "$(VOID_LINUX_PART_DIR)/"
+	$(MAKE) "IMAGE_DIR=$(VOID_LINUX_PART_DIR)" "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" \
+		IMAGE_PART_LABEL=$(VOID_LINUX_PART_LABEL) IMAGE_PART_SIZE=$(VOID_LINUX_PART_SIZE) \
+		image_grub_install \
+		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
+	#make the grub x64 the default bootloader (for pc bios & x86 this is the default
+	[ -e "$(VOID_LINUX_PART_DIR)/efi/boot/bootx64.efi" ] \
+		|| mv "$(VOID_LINUX_PART_DIR)/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
+		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
+	mkdir -p "$(VOID_LINUX_PART_DIR)/boot/grub/"
+	cp -ar "$(VOID_LINUX_ISO_DIR)/LiveOS" "$(VOID_LINUX_PART_DIR)/"
+	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub_void.cfg" "$(VOID_LINUX_PART_DIR)/boot/grub/"
+	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub.cfg" "$(VOID_LINUX_PART_DIR)/grub/"
+	cp "$(VOID_LINUX_ISO_DIR)/boot/"{vmlinuz,initrd} "$(VOID_LINUX_PART_DIR)/boot/"
+	$(MAKE) "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" "IMAGE_FILE=$@" \
+                "IMAGE_DIR=$(VOID_LINUX_PART_DIR)" \
+                image_assemble
+
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
 $(call gentargets,/gparted-live.iso) :
 	wget -O "$@" "$(GPARTED_BASE_URL)/gparted-live-$(GPARTED_VERSION)-$(subst $(SECONDARY_ARCH),i686-pae,$(subst $(PRIMARY_ARCH),amd64,$*)).iso"
