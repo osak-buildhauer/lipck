@@ -565,9 +565,8 @@ VOID_LINUX_ISO_DIR=$(VOID_LINUX_DIR)/iso_files
 #the partition label is used by the initrd and the grub to find the boot partition
 VOID_LINUX_PART_LABEL=VOID_LIVE
 VOID_LINUX_PART_SIZE=512M
-VOID_LINUX_IMAGE=$(CURRENT_DIR)/voidlinux.img
-multiboot_voidlinux : $(VOID_LINUX_IMAGE)
-$(VOID_LINUX_IMAGE): $(VOID_LINUX_ISO)
+VOID_LINUX_IMAGE=./voidlinux.img
+multiboot_voidlinux : $(VOID_LINUX_ISO)
 	mkdir -p "$(VOID_LINUX_ISO_DIR)/"
 	7z x -o"$(VOID_LINUX_ISO_DIR)" -aos "$<"
 	mkdir -p "$(VOID_LINUX_PART_DIR)/"
@@ -584,9 +583,9 @@ $(VOID_LINUX_IMAGE): $(VOID_LINUX_ISO)
 	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub_void.cfg" "$(VOID_LINUX_PART_DIR)/boot/grub/"
 	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub.cfg" "$(VOID_LINUX_PART_DIR)/grub/"
 	cp "$(VOID_LINUX_ISO_DIR)/boot/"{vmlinuz,initrd} "$(VOID_LINUX_PART_DIR)/boot/"
-	$(MAKE) "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" "IMAGE_FILE=$@" \
-                "IMAGE_DIR=$(VOID_LINUX_PART_DIR)" \
-                image_assemble
+	$(MAKE) "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" \
+		"IMAGE_DIR=$(VOID_LINUX_PART_DIR)" \
+		image_assemble
 
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
 $(call gentargets,/gparted-live.iso) :
