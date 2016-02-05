@@ -561,14 +561,10 @@ VOID_LINUX_DIR=$(WORKSPACE)/voidlinux
 VOID_LINUX_PART_FILE=$(VOID_LINUX_DIR)/void_linux.part
 VOID_LINUX_PART_DIR=$(VOID_LINUX_DIR)/partition_files
 VOID_LINUX_ISO=$(VOID_LINUX_DIR)/voidlinux.iso
-VOID_LINUX_ISO_DIR=$(VOID_LINUX_DIR)/iso_files
 #the partition label is used by the initrd and the grub to find the boot partition
 VOID_LINUX_PART_LABEL=VOID_LIVE
 VOID_LINUX_PART_SIZE=512M
-VOID_LINUX_IMAGE=./voidlinux.img
 multiboot_voidlinux : $(VOID_LINUX_ISO)
-	mkdir -p "$(VOID_LINUX_ISO_DIR)/"
-	7z x -o"$(VOID_LINUX_ISO_DIR)" -aos "$<"
 	mkdir -p "$(VOID_LINUX_PART_DIR)/"
 	$(MAKE) "IMAGE_DIR=$(VOID_LINUX_PART_DIR)" "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" \
 		IMAGE_PART_LABEL=$(VOID_LINUX_PART_LABEL) IMAGE_PART_SIZE=$(VOID_LINUX_PART_SIZE) \
@@ -578,14 +574,19 @@ multiboot_voidlinux : $(VOID_LINUX_ISO)
 	[ -e "$(VOID_LINUX_PART_DIR)/efi/boot/bootx64.efi" ] \
 		|| mv "$(VOID_LINUX_PART_DIR)/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
 		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
-	mkdir -p "$(VOID_LINUX_PART_DIR)/boot/grub/"
-	cp -ar "$(VOID_LINUX_ISO_DIR)/LiveOS" "$(VOID_LINUX_PART_DIR)/"
-	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub_void.cfg" "$(VOID_LINUX_PART_DIR)/boot/grub/"
-	cp "$(VOID_LINUX_ISO_DIR)/boot/grub/grub.cfg" "$(VOID_LINUX_PART_DIR)/grub/"
-	cp "$(VOID_LINUX_ISO_DIR)/boot/"{vmlinuz,initrd} "$(VOID_LINUX_PART_DIR)/boot/"
+	#we do not need all files but they are so small its not worth to sort them out
+	7z x -o"$(VOID_LINUX_PART_DIR)" -aos "$<" \
+		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
+	#our grub has another root dir; luckily the void linux grub config can handle that
+	#and we just have to move the main config to the correct root location
+	mv "$(VOID_LINUX_PART_DIR)/boot/grub/grub.cfg" "$(VOID_LINUX_PART_DIR)/grub/" \
+		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
 	$(MAKE) "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" \
 		"IMAGE_DIR=$(VOID_LINUX_PART_DIR)" \
 		image_assemble
+
+clean_voidlinux :
+	$(RM) -r "$(VOID_LINUX_DIR)"
 
 gparted : $(call archdir,$(PRIMARY_ARCH))/gparted-live.iso $(call archdir,$(SECONDARY_ARCH))/gparted-live.iso
 $(call gentargets,/gparted-live.iso) :
@@ -706,5 +707,6 @@ APT_CACHE_PHONY=apt_cache apt_cache_clean
 REPO_PHONY=repo repo_packages repo_package_info repo_metadata repo_clean repo_offline_repo_json
 IMAGE_PHONY=image image_content image_skel_file image_assemble image_remaster image_git image_git_pull image_binary_files image_grub_lipinfo image_grub_mkimage_efi image_grub_mkimage_mbr image_grub_mbr_template image_grub_install image_umount image_mount_if image_clean
 COMMON_PHONY=help workspace config multiboot config_clean clean_really_all
+VOIDLINUX_PHONY=multiboot_voidlinux clean_voidlinux
 
 .PHONY : default $(COMMON_PHONY) $(ISO_PHONY) $(ROOTFS_PHONY) $(INITRD_PHONY) $(APT_CACHE_PHONY) $(IMAGE_PHONY) $(REPO_PHONY)
