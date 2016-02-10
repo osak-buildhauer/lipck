@@ -487,7 +487,7 @@ $(IMAGE_DIR)$(GRUB_INSTALL_DIR)/.lipgrub: $(GRUB_ASSEMBLE_DIR)/grub.x86_64-efi $
 	$(RSYNC) "/usr/lib/grub/x86_64-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	$(RSYNC) "/usr/lib/grub/i386-efi" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	$(RSYNC) "/usr/lib/grub/i386-pc" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
-	$(RSYNC) "/usr/share/grub/themes" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
+	[ ! -d "/usr/share/grub/themes" ] || $(RSYNC) "/usr/share/grub/themes" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/"
 	mkdir -p "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/fonts"
 	$(RSYNC) "/usr/share/grub/unicode.pf2" "$(IMAGE_DIR)$(GRUB_INSTALL_DIR)/fonts/"
 	#copy efi core files; note that the x64 binary is named grubx64-unsigned.efi because grubx64.efi
@@ -560,11 +560,11 @@ multiboot :
 VOID_LINUX_DIR=$(WORKSPACE)/voidlinux
 VOID_LINUX_PART_FILE=$(VOID_LINUX_DIR)/void_linux.part
 VOID_LINUX_PART_DIR=$(VOID_LINUX_DIR)/partition_files
-VOID_LINUX_ISO=$(VOID_LINUX_DIR)/voidlinux.iso
+VOID_LINUX_SRCDIR=$(VOID_LINUX_DIR)/source
 #the partition label is used by the initrd and the grub to find the boot partition
 VOID_LINUX_PART_LABEL=VOID_LIVE
 VOID_LINUX_PART_SIZE=512M
-multiboot_voidlinux : $(VOID_LINUX_ISO)
+multiboot_voidlinux : $(VOID_LINUX_SRCDIR)
 	mkdir -p "$(VOID_LINUX_PART_DIR)/"
 	$(MAKE) "IMAGE_DIR=$(VOID_LINUX_PART_DIR)" "IMAGE_PART_FILE=$(VOID_LINUX_PART_FILE)" \
 		IMAGE_PART_LABEL=$(VOID_LINUX_PART_LABEL) IMAGE_PART_SIZE=$(VOID_LINUX_PART_SIZE) \
@@ -575,7 +575,7 @@ multiboot_voidlinux : $(VOID_LINUX_ISO)
 		|| mv "$(VOID_LINUX_PART_DIR)/efi/boot/"{grubx64-unsigned.efi,bootx64.efi} \
 		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
 	#we do not need all files but they are so small its not worth to sort them out
-	7z x -o"$(VOID_LINUX_PART_DIR)" -aos "$<" \
+	cp -ar -t "$(VOID_LINUX_PART_DIR)" "$(VOID_LINUX_SRCDIR)"/* \
 		|| (umount -d "$(VOID_LINUX_PART_DIR)" && exit 1)
 	#our grub has another root dir; luckily the void linux grub config can handle that
 	#and we just have to move the main config to the correct root location
