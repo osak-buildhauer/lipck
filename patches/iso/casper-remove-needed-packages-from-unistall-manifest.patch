@@ -5,22 +5,22 @@
  libfcitx-qt5-1:amd64
  libfcitx-utils0:amd64
 -libgeoclue0:amd64
--libjavascriptcoregtk-3.0-0:amd64
+-libjavascriptcoregtk-4.0-18:amd64
  liblua5.2-0:amd64
  liblvm2cmd2.02:amd64
  libnss3-1d:amd64
 @@ -53,10 +51,7 @@
- libpresage1:amd64
+ libpresage1v5:amd64
  libreadline5:amd64
  libtinyxml2.6.2v5:amd64
--libwebkitgtk-3.0-0:amd64
--libwebkitgtk-3.0-common
+-libwebkit2gtk-4.0-37:amd64
+-libwebkit2gtk-4.0-37-gtk2:amd64
  linux-signed-generic
--linux-signed-image-4.2.0-16-generic
+-linux-signed-image-4.4.0-7-generic
  linux-signed-image-generic
  localechooser-data
  lupin-casper
-@@ -84,5 +80,3 @@
+@@ -83,5 +78,3 @@
  user-setup
  watershed
  xfsprogs
