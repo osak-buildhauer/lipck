@@ -34,12 +34,14 @@
         {
             "pkgname": "gnome",
             "pkgdescription": "GNOME3 Desktop Umgebung",
-            "tagged": false
+            "tagged": false,
+            "hidden": true
         },
         {
             "pkgname": "xubuntu-desktop",
             "pkgdescription": "Xubuntu Desktop Umgebung und standard Programme",
-            "tagged": false
+            "tagged": false,
+            "hidden": true
         },
         {
             "pkgname": "fityk",
