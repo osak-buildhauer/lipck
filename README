@@ -1,15 +1,53 @@
-This is lipck - the "linux install party customization kit".
+Linux Install Party Customization Kit (lipck)
+=============================================
 
-This package of scripts is intended for remastering Ubuntu based 
-distributions.
-This collection of scripts was created by members of the
-Open-Source working group of the Fachschaft 1/1 Mathematik, Physik,
-Informatik of the RWTH Aachen University for remastering images for their
-Linux Install Parties.
-Existing solutions such as UCK could not do some things we wanted to do like 
-updating the initramfs kernel, saving space by deduplicating files between
-multiple architectures (e.g. x86,x64). We release this collection of scripts
-in hope that they will be useful for someone else as well.
+Content
+-------
 
-This project is licensed under the terms of the GPLv3 license which you can
-find in the COPYING file.
+0. License
+1. About
+2. Requirements
+3. HowTo
+
+License
+-------
+
+lipck is licensed under the GPLv3. See the COPYING file for further
+details.
+
+
+About
+-----
+
+lipck is an helper tool for remastering Ubuntu based distributions. Amongst
+others it can
+- apply patches to rootfs/isofs/initramfs,
+- update the initramfs kernel,
+- preinstall packages into the rootfs,
+- provide a custom package archive on the install media; this allows a user
+  to install extra packages without internet access,
+- merge i386 and amd64 install media (including file deduplication and
+  automated architecture recognition in grub),
+- autogenerate grub configuration from templates.
+
+In difference to other tools, like UCK, the host system is independent of the
+system remastered. Furthermore, the host is kept clean w.r.t. resources (like
+mount points). This is achieved by using linux namespaces/lxc.
+
+However, in its current state each version (git tag/commit) is designed for
+a single Ubuntu version. While the version/source image can be configured
+freely, patches and static files (i.e. those in the contrib directory) are
+not versionized and do only apply to a single Ubuntu image.
+
+Originally, lipck was (or still is) created to remaster install images for
+linux install fests organized by members of the Open-Source working group of
+the Fachschaft 1/1 Mathematik, Physik, Informatik of the RWTH Aachen University.
+It is published in hope that it will be useful for someone else as well.
+
+
+Requirements
+------------
+
+
+HowTo
+-----
