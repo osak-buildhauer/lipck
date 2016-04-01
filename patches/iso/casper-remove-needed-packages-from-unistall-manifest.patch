@@ -1,28 +1,28 @@
---- a/casper/filesystem.manifest-remove	2015-10-17 15:27:56.802304069 +0200
-+++ b/casper/filesystem.manifest-remove	2015-10-17 15:27:29.508085138 +0200
-@@ -44,8 +44,6 @@
+--- a/casper/filesystem.manifest-remove
++++ b/casper/filesystem.manifest-remove
+@@ -45,8 +45,6 @@ libfcitx-gclient0:amd64
  libfcitx-qt0:amd64
  libfcitx-qt5-1:amd64
  libfcitx-utils0:amd64
 -libgeoclue0:amd64
 -libjavascriptcoregtk-4.0-18:amd64
  liblua5.2-0:amd64
+ liblvm2app2.2:amd64
  liblvm2cmd2.02:amd64
- libnss3-1d:amd64
-@@ -53,10 +51,7 @@
+@@ -55,10 +53,7 @@ libpresage-data
  libpresage1v5:amd64
  libreadline5:amd64
  libtinyxml2.6.2v5:amd64
 -libwebkit2gtk-4.0-37:amd64
 -libwebkit2gtk-4.0-37-gtk2:amd64
  linux-signed-generic
--linux-signed-image-4.4.0-9-generic
+-linux-signed-image-4.4.0-16-generic
  linux-signed-image-generic
  localechooser-data
  lupin-casper
-@@ -83,5 +78,3 @@
+@@ -86,5 +81,3 @@ ubiquity-slideshow-kubuntu
+ ubiquity-ubuntu-artwork
  user-setup
- watershed
  xfsprogs
 -zenity
 -zenity-common
