@@ -229,6 +229,11 @@
     "Informatik": {
       "packages": [
         {
+            "pkgname": "eclipse",
+            "pkgdescription": "Umfangreiche Entwicklungsumgebung für verschiedene Programiersprachen, vornehmlich Java.",
+            "tagged": false
+        },
+        {
             "pkgname": "postgresql",
             "pkgdescription": "Datenbank-Server. Nett um in der Datenbanken-Vorlesungen Dinge auszuprobieren",
             "tagged": false
@@ -252,6 +257,11 @@
             "pkgname": "swi-prolog",
             "pkgdescription": "Prolog Interpreter/Compiler für die Vorlesung Programmierung",
             "tagged": true
+        },
+        {
+            "pkgname": "valgrind",
+            "pkgdescription": "Debugging- und Profilingtool, welches bei der Entwicklung von Programmen hilft.",
+            "tagged": false
         }
       ]
     }
