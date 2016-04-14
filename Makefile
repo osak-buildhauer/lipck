@@ -595,7 +595,7 @@ $(REPO_DIST_DIR)/binary-$(call altarch,$(PRIMARY_ARCH))/Packages.bz2 $(REPO_DIST
 		>> "$(REPO_DIST_DIR)/binary-$*/Release"
 
 	cd "$(REPO_ARCHIVE_DIR)" \
-	&& cat Packages.noarch "Packages.$*" | bzip2 -c9 > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
+	&& cat Packages.noarch "Packages.$*" > "$(REPO_DIST_DIR)/binary-$*/Packages.bz2"
 
 #The following rules requires none of its dependencies. However, it writes a timestamp to the metadata
 #that should always be "newer" than the dependencies.
