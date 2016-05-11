@@ -48,6 +48,28 @@ It is published in hope that it will be useful for someone else as well.
 Requirements
 ------------
 
+lipck makes use of the following tools (make sure they are installed):
+
+- 7z
+- bzip2
+- cpio
+- diff
+- git
+- (GNU) ddrescue
+- (GNU) make
+- grub (i386-pc, i386-efi, x86_64-efi)
+- lxc
+- patch
+- rsync
+- squashfs-tools (mksquashfs, unsquashfs)
+- tar
+- util-linux
+- wget
+- xz/lzma
+
+And, optionally,
+
+- VirtualBox tools (vboxmanage) to create a vmdk image.
 
 HowTo
 -----
