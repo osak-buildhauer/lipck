@@ -8,6 +8,7 @@ Content
 1. About
 2. Requirements
 3. HowTo
+4. Tips
 
 License
 -------
@@ -73,3 +74,60 @@ And, optionally,
 
 HowTo
 -----
+
+In short: run
+	$ make WORKSPACE=/media/drivewithspace config
+	# make image
+	# make repo  #build offline repository (optionally)
+	# make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy
+	# make IMAGE_FILE=/somewhere/myfinalimage.img image_deploy_vmdk
+
+where the first command should be executed as user (the owner of the lipck git)
+and all others as root. /media/drivewhitspace should provide enough disk space
+to store the basic isos, the extracted rootfs/initramfs, etc. (~40G should
+suffice). image_deploy will assemble the final (raw) image. The last command
+is optional again (note that IMAGE_FILE should have the same value as in the
+previous line).
+
+In practise, you may want to edit some configuration files/patches prior to
+invoking make as described above:
+
+- the most important config file is config/Makefile.conf where, among others,
+  the base iso can be configured. See config/examples for more details.
+
+- contrib/rootfs/{hold_packages,pre_installed_packages*} lets you control the
+  packages that will be installed preinstalled in the rootfs.
+
+- contrib/rootfs/offline_repo.json defines all packages available in the
+  offline repository.
+
+- Files in contrib/rootfs/{modprobe.d,skel,sysctl.d} will be copied as is
+  to the corresponding folders in the rootfs.
+
+- patches/{initrd,iso,rootfs} contains patches for the initramfs,
+  iso/images root, and the rootfs. Probably they have to be adapted for
+  new iso base images. Unfortunaly, version/iso specific patches are not
+  supported yet.
+
+Lastly, you may want to spawn a shell in the rootfs being remastered with
+
+	# make rootfs_console
+
+to debug stuff.
+
+
+Tips
+-----
+
+- If the rootfs_remaster target failed, it may the neccessary to execute the
+  next make command two times (the first time a dirty state will be discovered
+  and fixed).
+
+- code executed in the rootfs is located in scripts/, you may need to execute
+
+	# make rootfs_finalize
+
+  to trigger a reload of this code.
+
+
+Happy hacking!
